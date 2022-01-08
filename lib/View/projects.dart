@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:get/get.dart';
 import 'package:project_tasker/Components/bottomNavigation.dart';
 import 'package:project_tasker/Helper/values.dart';
 
@@ -21,6 +22,8 @@ class _ProjectsState extends State {
     return Scaffold(
       backgroundColor: white,
       appBar: AppBar(
+        centerTitle: true,
+        automaticallyImplyLeading: false,
         backgroundColor: white,
         foregroundColor: textColor,
         elevation: 0,
@@ -36,7 +39,7 @@ class _ProjectsState extends State {
           height: height * 0.1,
           //color: violet,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
                 child: Text(
@@ -47,6 +50,7 @@ class _ProjectsState extends State {
                       fontSize: height * 0.033),
                 ),
               ),
+              Spacer(),
               Container(
                   child: Stack(
                 children: [

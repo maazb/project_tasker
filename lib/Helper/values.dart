@@ -12,4 +12,4 @@ Color green = Color.fromRGBO(2, 207, 170, 1);
 Color grey = Color.fromRGBO(239, 240, 250, 1);
 Color shadowGrey = Color.fromRGBO(230, 230, 230, 1);
 Color grey2 = Color.fromRGBO(229, 230, 240, 1);
-Color invisible = Color.fromRGBO(254, 254, 254, 0);
+Color textLight = Color.fromRGBO(110, 110, 110, 1);

@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_tasker/Helper/values.dart';
+import 'package:project_tasker/View/account.dart';
+import 'package:project_tasker/View/calendar.dart';
 import 'package:project_tasker/View/homeScreen.dart';
 import 'package:project_tasker/View/projects.dart';
 
@@ -34,48 +36,76 @@ class _BottomNavigationState extends State {
           children: [
             CupertinoButton(
                 padding: EdgeInsets.all(0),
-                child: Icon(
-                  CupertinoIcons.house_alt_fill,
-                  color: violet,
-                  size: width * 0.06,
-                ),
+                child: Get.currentRoute == "/HomeScreen"
+                    ? Icon(
+                        CupertinoIcons.house_alt,
+                        color: violet,
+                        size: width * 0.06,
+                      )
+                    : Icon(
+                        CupertinoIcons.house_alt,
+                        color: lightViolet,
+                        size: width * 0.06,
+                      ),
                 onPressed: () {
-                  Get.offAll(() => HomeScreen());
+                  Get.to(() => HomeScreen());
                 }),
             CupertinoButton(
                 padding: EdgeInsets.all(0),
-                child: Icon(
-                  CupertinoIcons.square_list,
-                  color: violet,
-                  size: width * 0.06,
-                ),
+                child: Get.currentRoute == "/Projects"
+                    ? Icon(
+                        CupertinoIcons.square_list,
+                        color: violet,
+                        size: width * 0.06,
+                      )
+                    : Icon(
+                        CupertinoIcons.square_list,
+                        color: lightViolet,
+                        size: width * 0.06,
+                      ),
                 onPressed: () {
-                  Get.offAll(() => Projects());
+                  Get.to(() => Projects());
                 }),
             CupertinoButton(
                 padding: EdgeInsets.all(0),
                 child: Icon(
                   CupertinoIcons.add_circled,
                   color: violet,
-                  size: width * 0.09,
+                  size: width * 0.1,
                 ),
                 onPressed: () {}),
             CupertinoButton(
                 padding: EdgeInsets.all(0),
-                child: Icon(
-                  CupertinoIcons.calendar_today,
-                  color: violet,
-                  size: width * 0.06,
-                ),
-                onPressed: () {}),
+                child: Get.currentRoute == "/Calendar"
+                    ? Icon(
+                        CupertinoIcons.calendar,
+                        color: violet,
+                        size: width * 0.06,
+                      )
+                    : Icon(
+                        CupertinoIcons.calendar,
+                        color: lightViolet,
+                        size: width * 0.06,
+                      ),
+                onPressed: () {
+                  Get.to(() => Calendar());
+                }),
             CupertinoButton(
                 padding: EdgeInsets.all(0),
-                child: Icon(
-                  CupertinoIcons.person_solid,
-                  color: violet,
-                  size: width * 0.06,
-                ),
-                onPressed: () {}),
+                child: Get.currentRoute == "/Account"
+                    ? Icon(
+                        CupertinoIcons.person,
+                        color: violet,
+                        size: width * 0.06,
+                      )
+                    : Icon(
+                        CupertinoIcons.person,
+                        color: lightViolet,
+                        size: width * 0.06,
+                      ),
+                onPressed: () {
+                  Get.to(() => Account());
+                }),
           ],
         ),
       ),
