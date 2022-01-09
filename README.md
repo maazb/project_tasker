@@ -1,16 +1,17 @@
 # project_tasker
 
-A new Flutter project.
+An app designed to take care of your personal task managemnet.
 
-## Getting Started
+A simple clean and cutomizable UI equipped with powerful data management and account integration.
 
-This project is a starting point for a Flutter application.
+# Features:
 
-A few resources to get you started if this is your first Flutter project:
+Add tasks with just two taps.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+Categorize your tasks in projects.
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Completion percentage indicator for each project.
+
+Calendar feature to keep track of your tasks datewise.
+
+Fun and cusomizable UI with theme selection and Avatars.

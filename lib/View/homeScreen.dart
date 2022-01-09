@@ -4,9 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:project_tasker/Components/bottomNavigation.dart';
 import 'package:project_tasker/Helper/values.dart';
+
+import 'package:project_tasker/View/notifications.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -50,25 +53,32 @@ class _HomeScreenState extends State {
                       fontSize: height * 0.033),
                 ),
               ),
-              Container(
-                  child: Stack(
-                children: [
-                  Icon(
-                    CupertinoIcons.bell,
-                    color: textColor,
-                  ),
-                  Positioned(
-                      right: width * 0.00,
-                      top: height * 0.00,
-                      child: Container(
-                        height: width * 0.018,
-                        width: width * 0.018,
-                        decoration: BoxDecoration(
-                            color: green,
-                            borderRadius: BorderRadius.circular(width * 5)),
-                      ))
-                ],
-              ))
+              CupertinoButton(
+                minSize: width * 0.001,
+                padding: EdgeInsets.all(0),
+                onPressed: () {
+                  Get.to(() => Notifications());
+                },
+                child: Container(
+                    child: Stack(
+                  children: [
+                    Icon(
+                      CupertinoIcons.bell,
+                      color: textColor,
+                    ),
+                    Positioned(
+                        right: width * 0.00,
+                        top: height * 0.00,
+                        child: Container(
+                          height: width * 0.018,
+                          width: width * 0.018,
+                          decoration: BoxDecoration(
+                              color: green,
+                              borderRadius: BorderRadius.circular(width * 5)),
+                        ))
+                  ],
+                )),
+              )
             ],
           ),
         ),
@@ -168,12 +178,12 @@ class _HomeScreenState extends State {
                                         width: height * 0.17,
                                         decoration: BoxDecoration(
                                             color: grey,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                  offset: Offset(0, 2),
-                                                  color: grey,
-                                                  blurRadius: 20),
-                                            ],
+                                            // boxShadow: [
+                                            //   BoxShadow(
+                                            //       offset: Offset(0, 2),
+                                            //       color: grey,
+                                            //       blurRadius: 20),
+                                            // ],
                                             borderRadius: BorderRadius.circular(
                                                 width * 0.06)),
                                         child: Container(

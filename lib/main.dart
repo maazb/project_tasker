@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: Container(
         margin: EdgeInsets.all(height * 0.03),
         child: CircularProgressIndicator(
-          strokeWidth: width * 0.015,
+          strokeWidth: width * 0.012,
           color: violet,
         ),
       ),

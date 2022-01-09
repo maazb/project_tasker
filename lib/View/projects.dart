@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:project_tasker/Components/bottomNavigation.dart';
 import 'package:project_tasker/Helper/values.dart';
+import 'package:project_tasker/View/openProject.dart';
 
 class Projects extends StatefulWidget {
   @override
@@ -14,6 +15,8 @@ class Projects extends StatefulWidget {
 class _ProjectsState extends State {
   late double height;
   late double width;
+  RxBool isSearchOpen = false.obs;
+
   @override
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
@@ -33,44 +36,72 @@ class _ProjectsState extends State {
           statusBarIconBrightness: Brightness.dark,
         ),
         toolbarHeight: height * 0.1,
-        title: Container(
-          margin: EdgeInsets.symmetric(horizontal: width * 0.02),
-          width: width,
-          height: height * 0.1,
-          //color: violet,
-          child: Row(
-            //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                child: Text(
-                  "Projects",
-                  style: GoogleFonts.poppins(
-                      color: textColor,
-                      fontWeight: FontWeight.w600,
-                      fontSize: height * 0.033),
+        title: Obx(
+          () => Container(
+            margin: EdgeInsets.symmetric(horizontal: width * 0.02),
+            width: width,
+            height: height * 0.1,
+            //color: violet,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  child: isSearchOpen.value == false
+                      ? Text(
+                          "Projects",
+                          style: GoogleFonts.poppins(
+                              color: textColor,
+                              fontWeight: FontWeight.w600,
+                              fontSize: height * 0.033),
+                        )
+                      : Expanded(
+                          child: CupertinoSearchTextField(
+                            enabled: true,
+                            style: GoogleFonts.poppins(
+                                color: textColor,
+                                fontWeight: FontWeight.w400,
+                                fontSize: height * 0.018),
+                          ),
+                        ),
                 ),
-              ),
-              Spacer(),
-              Container(
-                  child: Stack(
-                children: [
-                  Icon(
-                    CupertinoIcons.search,
-                    color: textColor,
-                  ),
-                  // Positioned(
-                  //     right: width * 0.00,
-                  //     top: height * 0.00,
-                  //     child: Container(
-                  //       height: width * 0.018,
-                  //       width: width * 0.018,
-                  //       decoration: BoxDecoration(
-                  //           color: green,
-                  //           borderRadius: BorderRadius.circular(width * 5)),
-                  //     ))
-                ],
-              ))
-            ],
+                CupertinoButton(
+                  padding: EdgeInsets.all(0),
+                  onPressed: () {
+                    if (isSearchOpen.value == false) {
+                      isSearchOpen.value = true;
+                    } else {
+                      isSearchOpen.value = false;
+                    }
+                    print(isSearchOpen.value.toString());
+                  },
+                  child: Container(
+                      margin: EdgeInsets.only(left: width * 0.055),
+                      child: Stack(
+                        children: [
+                          isSearchOpen.value == false
+                              ? Icon(
+                                  CupertinoIcons.search,
+                                  color: textColor,
+                                )
+                              : Icon(
+                                  CupertinoIcons.multiply,
+                                  color: textColor,
+                                ),
+                          // Positioned(
+                          //     right: width * 0.00,
+                          //     top: height * 0.00,
+                          //     child: Container(
+                          //       height: width * 0.018,
+                          //       width: width * 0.018,
+                          //       decoration: BoxDecoration(
+                          //           color: green,
+                          //           borderRadius: BorderRadius.circular(width * 5)),
+                          //     ))
+                        ],
+                      )),
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -94,80 +125,87 @@ class _ProjectsState extends State {
                                     height: height * 0.018,
                                   )
                                 : Container(),
-                            Container(
-                              // margin: EdgeInsets.symmetric(
-                              //     horizontal: width * 0.055,
-                              //     vertical: height * 0.02),
-                              height: height * 0.18,
-                              width: width,
-                              decoration: BoxDecoration(
-                                  color: skin,
-                                  borderRadius:
-                                      BorderRadius.circular(width * 0.06)),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      margin: EdgeInsets.only(
-                                          right: width * 0.02,
-                                          left: width * 0.04,
-                                          bottom: height * 0.04,
-                                          top: height * 0.03),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        // mainAxisAlignment:
-                                        //     MainAxisAlignment.spaceAround,
-                                        children: [
-                                          Container(
-                                            child: Row(
-                                              children: [
-                                                Text(
-                                                  "4/10 tasks - ",
-                                                  style: GoogleFonts.poppins(
-                                                      color: textColor,
-                                                      fontWeight:
-                                                          FontWeight.w300,
-                                                      fontSize: height * 0.018),
-                                                ),
-                                                Text(
-                                                  "40%",
-                                                  style: GoogleFonts.poppins(
-                                                      color: textColor,
-                                                      fontWeight:
-                                                          FontWeight.w300,
-                                                      fontSize: height * 0.018),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Container(
-                                            child: Flexible(
-                                              child: Text(
-                                                "Morning Routine",
-                                                style: GoogleFonts.poppins(
-                                                    color: textColor,
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize: height * 0.025),
+                            CupertinoButton(
+                              onPressed: () => Get.to(() => OpenProject()),
+                              padding: EdgeInsets.all(0),
+                              child: Container(
+                                // margin: EdgeInsets.symmetric(
+                                //     horizontal: width * 0.055,
+                                //     vertical: height * 0.02),
+                                height: height * 0.18,
+                                width: width,
+                                decoration: BoxDecoration(
+                                    color: skin,
+                                    borderRadius:
+                                        BorderRadius.circular(width * 0.06)),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        margin: EdgeInsets.only(
+                                            right: width * 0.02,
+                                            left: width * 0.04,
+                                            bottom: height * 0.04,
+                                            top: height * 0.03),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          // mainAxisAlignment:
+                                          //     MainAxisAlignment.spaceAround,
+                                          children: [
+                                            Container(
+                                              child: Row(
+                                                children: [
+                                                  Text(
+                                                    "4/10 tasks - ",
+                                                    style: GoogleFonts.poppins(
+                                                        color: textColor,
+                                                        fontWeight:
+                                                            FontWeight.w300,
+                                                        fontSize:
+                                                            height * 0.018),
+                                                  ),
+                                                  Text(
+                                                    "40%",
+                                                    style: GoogleFonts.poppins(
+                                                        color: textColor,
+                                                        fontWeight:
+                                                            FontWeight.w300,
+                                                        fontSize:
+                                                            height * 0.018),
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                          )
-                                        ],
+                                            Container(
+                                              child: Flexible(
+                                                child: Text(
+                                                  "Morning Routine",
+                                                  style: GoogleFonts.poppins(
+                                                      color: textColor,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontSize: height * 0.025),
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Container(
-                                    height: width * 0.35,
-                                    width: width * 0.35,
-                                    padding: EdgeInsets.all(width * 0.0),
-                                    margin: EdgeInsets.only(
-                                        top: height * 0.02,
-                                        right: width * 0.04),
-                                    child: Image.asset(
-                                      "assets/images/avatar8.png",
+                                    Container(
+                                      height: width * 0.35,
+                                      width: width * 0.35,
+                                      padding: EdgeInsets.all(width * 0.0),
+                                      margin: EdgeInsets.only(
+                                          top: height * 0.02,
+                                          right: width * 0.04),
+                                      child: Image.asset(
+                                        "assets/images/avatar8.png",
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                             SizedBox(

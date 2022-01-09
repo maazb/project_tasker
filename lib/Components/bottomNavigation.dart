@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_tasker/Helper/values.dart';
+import 'package:project_tasker/View/Bottomsheets/addSheet.dart';
 import 'package:project_tasker/View/account.dart';
 import 'package:project_tasker/View/calendar.dart';
 import 'package:project_tasker/View/homeScreen.dart';
@@ -73,7 +74,9 @@ class _BottomNavigationState extends State {
                   color: violet,
                   size: width * 0.1,
                 ),
-                onPressed: () {}),
+                onPressed: () {
+                  Get.bottomSheet(AddSheet());
+                }),
             CupertinoButton(
                 padding: EdgeInsets.all(0),
                 child: Get.currentRoute == "/Calendar"
