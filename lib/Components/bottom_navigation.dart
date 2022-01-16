@@ -4,10 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_tasker/Helper/values.dart';
-import 'package:project_tasker/View/Bottomsheets/addSheet.dart';
+import 'package:project_tasker/View/Bottomsheets/add_sheet.dart';
 import 'package:project_tasker/View/account.dart';
 import 'package:project_tasker/View/calendar.dart';
-import 'package:project_tasker/View/homeScreen.dart';
+import 'package:project_tasker/View/home_screen.dart';
 import 'package:project_tasker/View/projects.dart';
 
 class BottomNavigation extends StatefulWidget {

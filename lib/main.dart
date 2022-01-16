@@ -3,8 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:get/get.dart';
+import 'package:project_tasker/Controller/load_data_controller.dart';
 import 'package:project_tasker/Helper/values.dart';
-import 'package:project_tasker/View/homeScreen.dart';
+import 'package:project_tasker/View/home_screen.dart';
 
 void main() {
   //Get.put(LoadDataController());
@@ -31,15 +32,20 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late double height;
   late double width;
-
-  //LoadDataController _loadDataController = Get.find();
+  LoadDataController _loadDataController = Get.put(LoadDataController());
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     loadData();
+    getData();
   }
+
+  void getData() async {
+    _loadDataController.getNotes();
+  }
+
+  //LoadDataController _loadDataController = Get.find();
 
   @override
   void dispose() {
@@ -75,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: Container(
         margin: EdgeInsets.all(height * 0.03),
         child: CircularProgressIndicator(
-          strokeWidth: width * 0.012,
+          strokeWidth: width * 0.01,
           color: violet,
         ),
       ),

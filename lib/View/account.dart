@@ -2,9 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:project_tasker/Components/bottomNavigation.dart';
+import 'package:project_tasker/Components/bottom_navigation.dart';
 import 'package:project_tasker/Helper/values.dart';
+import 'package:project_tasker/View/Bottomsheets/about_us_sheet.dart';
+import 'package:project_tasker/View/Bottomsheets/privacy_policy_sheet.dart';
+import 'package:project_tasker/View/Bottomsheets/select_avatar_sheet.dart';
+import 'package:project_tasker/View/Bottomsheets/select_theme_sheet.dart';
 
 class Account extends StatefulWidget {
   @override
@@ -163,6 +168,9 @@ class _AccountState extends State {
                 //   ),
                 // ),
                 ListTile(
+                  onTap: () {
+                    Get.bottomSheet(SelectThemeSheet());
+                  },
                   contentPadding: EdgeInsets.all(0),
                   // leading: SvgPicture.asset(
                   //   'assets/icons/history.svg',
@@ -193,6 +201,7 @@ class _AccountState extends State {
                   height: height * 0.015,
                 ),
                 ListTile(
+                  onTap: () => Get.bottomSheet(SelectAvatarSheet()),
                   contentPadding: EdgeInsets.all(0),
                   // leading: SvgPicture.asset(
                   //   'assets/icons/wishlist.svg',
@@ -253,6 +262,7 @@ class _AccountState extends State {
                   height: height * 0.015,
                 ),
                 ListTile(
+                  onTap: () => Get.bottomSheet(AboutUsSheet()),
                   contentPadding: EdgeInsets.all(0),
                   // leading: SvgPicture.asset(
                   //   'assets/icons/logout.svg',
@@ -283,6 +293,7 @@ class _AccountState extends State {
                   height: height * 0.015,
                 ),
                 ListTile(
+                  onTap: () => Get.bottomSheet(PrivacyPolicySheet()),
                   contentPadding: EdgeInsets.all(0),
                   // leading: SvgPicture.asset(
                   //   'assets/icons/logout.svg',

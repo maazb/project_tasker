@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
-import 'package:project_tasker/Components/bottomNavigation.dart';
+import 'package:project_tasker/Components/bottom_navigation.dart';
 import 'package:project_tasker/Helper/values.dart';
-import 'package:project_tasker/View/openProject.dart';
+import 'package:project_tasker/View/open_project.dart';
 
 class Projects extends StatefulWidget {
   @override

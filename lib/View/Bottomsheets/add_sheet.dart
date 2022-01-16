@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:project_tasker/Helper/values.dart';
-import 'package:project_tasker/View/Bottomsheets/addNoteSheet.dart';
-import 'package:project_tasker/View/Bottomsheets/addProjectSheet.dart';
-import 'package:project_tasker/View/Bottomsheets/addTaskSheet.dart';
+import 'package:project_tasker/View/Bottomsheets/add_note_sheet.dart';
+import 'package:project_tasker/View/Bottomsheets/add_project_sheet.dart';
+import 'package:project_tasker/View/Bottomsheets/add_task_sheet.dart';
 
 class AddSheet extends StatefulWidget {
   @override

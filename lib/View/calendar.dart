@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:project_tasker/Components/bottomNavigation.dart';
+import 'package:project_tasker/Components/bottom_navigation.dart';
 import 'package:project_tasker/Helper/values.dart';
 import 'package:table_calendar/table_calendar.dart';
 

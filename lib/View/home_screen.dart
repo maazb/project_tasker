@@ -6,7 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:project_tasker/Components/bottomNavigation.dart';
+import 'package:project_tasker/Components/bottom_navigation.dart';
+import 'package:project_tasker/Controller/load_data_controller.dart';
 import 'package:project_tasker/Helper/values.dart';
 
 import 'package:project_tasker/View/notifications.dart';
@@ -19,6 +20,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State {
   late double height;
   late double width;
+  LoadDataController _loadDataController = Get.find();
+
   @override
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
@@ -158,79 +161,83 @@ class _HomeScreenState extends State {
                         ],
                       ),
                     ),
-                    Container(
-                        height: height * 0.2,
-                        child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: 5,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Row(
-                                children: [
-                                  index == 0
-                                      ? SizedBox(
-                                          width: width * 0.055,
-                                        )
-                                      : Container(),
-                                  Stack(
-                                    children: [
-                                      Container(
-                                        height: height * 0.17,
-                                        width: height * 0.17,
-                                        decoration: BoxDecoration(
-                                            color: grey,
-                                            // boxShadow: [
-                                            //   BoxShadow(
-                                            //       offset: Offset(0, 2),
-                                            //       color: grey,
-                                            //       blurRadius: 20),
-                                            // ],
-                                            borderRadius: BorderRadius.circular(
-                                                width * 0.06)),
-                                        child: Container(
-                                          padding:
-                                              EdgeInsets.all(height * 0.015),
-                                          child: Text(
-                                            "Short Notes are a way to write small thoughts down, you can jot down quick notes here.",
-                                            style: GoogleFonts.poppins(
-                                                color: textColor,
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: height * 0.014),
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                          right: height * 0.012,
-                                          bottom: height * 0.012,
-                                          child: Container(
-                                            height: height * 0.035,
-                                            width: height * 0.035,
-                                            decoration: BoxDecoration(
-                                              color: white,
+                    Obx(
+                      () => Container(
+                          height: height * 0.2,
+                          child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: _loadDataController.noteList.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Row(
+                                  children: [
+                                    index == 0
+                                        ? SizedBox(
+                                            width: width * 0.055,
+                                          )
+                                        : Container(),
+                                    Stack(
+                                      children: [
+                                        Container(
+                                          height: height * 0.17,
+                                          width: height * 0.17,
+                                          decoration: BoxDecoration(
+                                              color: grey,
+                                              // boxShadow: [
+                                              //   BoxShadow(
+                                              //       offset: Offset(0, 2),
+                                              //       color: grey,
+                                              //       blurRadius: 20),
+                                              // ],
                                               borderRadius:
                                                   BorderRadius.circular(
-                                                      height * 3),
-                                            ),
-                                            child: CupertinoButton(
-                                              onPressed: () {},
-                                              padding: EdgeInsets.all(0),
-                                              minSize: height * 0.035,
-                                              child: Container(
-                                                child: Icon(
-                                                  Icons.edit,
+                                                      width * 0.06)),
+                                          child: Container(
+                                            padding:
+                                                EdgeInsets.all(height * 0.015),
+                                            child: Text(
+                                              _loadDataController.noteList
+                                                  .value[index].content!,
+                                              style: GoogleFonts.poppins(
                                                   color: textColor,
-                                                  size: height * 0.022,
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: height * 0.014),
+                                            ),
+                                          ),
+                                        ),
+                                        Positioned(
+                                            right: height * 0.012,
+                                            bottom: height * 0.012,
+                                            child: Container(
+                                              height: height * 0.035,
+                                              width: height * 0.035,
+                                              decoration: BoxDecoration(
+                                                color: white,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        height * 3),
+                                              ),
+                                              child: CupertinoButton(
+                                                onPressed: () {},
+                                                padding: EdgeInsets.all(0),
+                                                minSize: height * 0.035,
+                                                child: Container(
+                                                  child: Icon(
+                                                    Icons.edit,
+                                                    color: textColor,
+                                                    size: height * 0.022,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ))
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    width: width * 0.03,
-                                  )
-                                ],
-                              );
-                            }))
+                                            ))
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      width: width * 0.03,
+                                    )
+                                  ],
+                                );
+                              })),
+                    )
                   ],
                 ),
               ),

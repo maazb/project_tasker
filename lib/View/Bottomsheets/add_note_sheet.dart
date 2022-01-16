@@ -3,7 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:project_tasker/Controller/load_data_controller.dart';
 import 'package:project_tasker/Helper/values.dart';
+import 'package:project_tasker/Model/note.dart';
 
 class AddNoteSheet extends StatefulWidget {
   @override
@@ -13,6 +15,8 @@ class AddNoteSheet extends StatefulWidget {
 class _AddNoteSheetState extends State {
   late double height;
   late double width;
+  LoadDataController _loadDataController = Get.find();
+  TextEditingController _textEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +69,7 @@ class _AddNoteSheetState extends State {
                       height: height * 0.1,
                       width: width * 0.5,
                       child: TextField(
+                        controller: _textEditingController,
                         decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: "Write here..."),
@@ -119,6 +124,9 @@ class _AddNoteSheetState extends State {
                       CupertinoButton(
                         padding: EdgeInsets.all(0),
                         onPressed: () {
+                          _loadDataController.noteList.add(Note(
+                              id: _loadDataController.noteList.length + 1,
+                              content: _textEditingController.text));
                           Get.back();
                         },
                         child: Container(

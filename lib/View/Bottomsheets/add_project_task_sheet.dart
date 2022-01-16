@@ -1,18 +1,34 @@
 // ignore_for_file: file_names
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:project_tasker/Helper/values.dart';
+import 'package:project_tasker/View/Bottomsheets/select_project.dart';
 
-class AddTaskSheet extends StatefulWidget {
+class AddProjectTaskSheet extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _AddTaskSheetState();
+  State<StatefulWidget> createState() => _AddProjectTaskSheetState();
 }
 
-class _AddTaskSheetState extends State {
+class _AddProjectTaskSheetState extends State {
   late double height;
   late double width;
+  DateTime selectedDate = DateTime.now();
+  RxString sdate = (DateTime.now().day.toString() +
+          " / " +
+          DateTime.now().month.toString() +
+          " / " +
+          DateTime.now().year.toString())
+      .obs;
+
+  TimeOfDay selectedTime = TimeOfDay.now();
+  RxString stime = (TimeOfDay.now().hour.toString() +
+          " : " +
+          TimeOfDay.now().minute.toString())
+      .obs;
 
   @override
   Widget build(BuildContext context) {
@@ -76,98 +92,138 @@ class _AddTaskSheetState extends State {
                         maxLines: 1,
                       )),
                 ),
-                Container(
-                  height: height * 0.07,
-                  width: width,
-                  margin: EdgeInsets.fromLTRB(width * 0.055, height * 0.02,
-                      width * 0.055, height * 0.005),
-                  decoration: BoxDecoration(
-                    color: grey,
-                    borderRadius: BorderRadius.circular(width * 0.03),
-                  ),
+                CupertinoButton(
+                  onPressed: () {
+                    Get.bottomSheet(SelectProjectSheet());
+                  },
+                  padding: EdgeInsets.all(0),
+                  minSize: width * 0.001,
                   child: Container(
-                      margin: EdgeInsets.symmetric(
-                          vertical: height * 0.01, horizontal: width * 0.04),
-                      height: height * 0.07,
-                      width: width * 0.5,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Select project",
-                            style: GoogleFonts.poppins(
-                                color: textLight,
-                                fontWeight: FontWeight.w400,
-                                fontSize: height * 0.018),
-                          ),
-                          Icon(
-                            CupertinoIcons.forward,
-                            color: textLight,
-                          )
-                        ],
-                      )),
+                    height: height * 0.07,
+                    width: width,
+                    margin: EdgeInsets.fromLTRB(width * 0.055, height * 0.02,
+                        width * 0.055, height * 0.005),
+                    decoration: BoxDecoration(
+                      color: grey,
+                      borderRadius: BorderRadius.circular(width * 0.03),
+                    ),
+                    child: Container(
+                        margin: EdgeInsets.symmetric(
+                            vertical: height * 0.01, horizontal: width * 0.04),
+                        height: height * 0.07,
+                        width: width * 0.5,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Select project",
+                              style: GoogleFonts.poppins(
+                                  color: textLight,
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: height * 0.018),
+                            ),
+                            Icon(
+                              CupertinoIcons.forward,
+                              color: textLight,
+                            )
+                          ],
+                        )),
+                  ),
                 ),
-                Container(
-                  height: height * 0.07,
-                  width: width,
-                  margin: EdgeInsets.fromLTRB(width * 0.055, height * 0.02,
-                      width * 0.055, height * 0.005),
-                  decoration: BoxDecoration(
-                    color: grey,
-                    borderRadius: BorderRadius.circular(width * 0.03),
-                  ),
+                CupertinoButton(
+                  onPressed: () async {
+                    selectedDate = (await showDatePicker(
+                        context: context,
+                        initialDate: selectedDate,
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime.now().add(Duration(days: 365))))!;
+
+                    sdate.value = selectedDate.day.toString() +
+                        " / " +
+                        selectedDate.month.toString() +
+                        " / " +
+                        selectedDate.year.toString();
+                  },
+                  padding: EdgeInsets.all(0),
+                  minSize: width * 0.001,
                   child: Container(
-                      margin: EdgeInsets.symmetric(
-                          vertical: height * 0.01, horizontal: width * 0.04),
-                      height: height * 0.07,
-                      width: width * 0.5,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Select date",
-                            style: GoogleFonts.poppins(
-                                color: textLight,
-                                fontWeight: FontWeight.w400,
-                                fontSize: height * 0.018),
-                          ),
-                          Icon(
-                            CupertinoIcons.forward,
-                            color: textLight,
-                          )
-                        ],
-                      )),
+                    height: height * 0.07,
+                    width: width,
+                    margin: EdgeInsets.fromLTRB(width * 0.055, height * 0.02,
+                        width * 0.055, height * 0.005),
+                    decoration: BoxDecoration(
+                      color: grey,
+                      borderRadius: BorderRadius.circular(width * 0.03),
+                    ),
+                    child: Container(
+                        margin: EdgeInsets.symmetric(
+                            vertical: height * 0.01, horizontal: width * 0.04),
+                        height: height * 0.07,
+                        width: width * 0.5,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Obx(
+                              () => Text(
+                                "Date :    " + sdate.value,
+                                style: GoogleFonts.poppins(
+                                    color: textLight,
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: height * 0.018),
+                              ),
+                            ),
+                            Icon(
+                              CupertinoIcons.forward,
+                              color: textLight,
+                            )
+                          ],
+                        )),
+                  ),
                 ),
-                Container(
-                  height: height * 0.07,
-                  width: width,
-                  margin: EdgeInsets.fromLTRB(width * 0.055, height * 0.02,
-                      width * 0.055, height * 0.005),
-                  decoration: BoxDecoration(
-                    color: grey,
-                    borderRadius: BorderRadius.circular(width * 0.03),
-                  ),
+                CupertinoButton(
+                  onPressed: () async {
+                    selectedTime = (await showTimePicker(
+                        context: context, initialTime: TimeOfDay.now()))!;
+
+                    stime.value = (selectedTime.hour.toString() +
+                        " : " +
+                        selectedTime.minute.toString());
+                  },
+                  padding: EdgeInsets.all(0),
+                  minSize: width * 0.001,
                   child: Container(
-                      margin: EdgeInsets.symmetric(
-                          vertical: height * 0.01, horizontal: width * 0.04),
-                      height: height * 0.07,
-                      width: width * 0.5,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Select time",
-                            style: GoogleFonts.poppins(
-                                color: textLight,
-                                fontWeight: FontWeight.w400,
-                                fontSize: height * 0.018),
-                          ),
-                          Icon(
-                            CupertinoIcons.forward,
-                            color: textLight,
-                          )
-                        ],
-                      )),
+                    height: height * 0.07,
+                    width: width,
+                    margin: EdgeInsets.fromLTRB(width * 0.055, height * 0.02,
+                        width * 0.055, height * 0.005),
+                    decoration: BoxDecoration(
+                      color: grey,
+                      borderRadius: BorderRadius.circular(width * 0.03),
+                    ),
+                    child: Container(
+                        margin: EdgeInsets.symmetric(
+                            vertical: height * 0.01, horizontal: width * 0.04),
+                        height: height * 0.07,
+                        width: width * 0.5,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Obx(
+                              () => Text(
+                                "Time :    " + stime.value,
+                                style: GoogleFonts.poppins(
+                                    color: textLight,
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: height * 0.018),
+                              ),
+                            ),
+                            Icon(
+                              CupertinoIcons.forward,
+                              color: textLight,
+                            )
+                          ],
+                        )),
+                  ),
                 ),
                 Container(
                   margin: EdgeInsets.symmetric(
