@@ -38,11 +38,14 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     loadData();
+
     getData();
   }
 
   void getData() async {
     _loadDataController.getNotes();
+    _loadDataController.getProjects();
+    _loadDataController.addColors();
   }
 
   //LoadDataController _loadDataController = Get.find();

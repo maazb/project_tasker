@@ -1,10 +1,13 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:project_tasker/Helper/values.dart';
 import 'package:project_tasker/Model/note.dart';
 import 'package:project_tasker/Model/project.dart';
 
 class LoadDataController extends GetxController {
   RxList<Note> noteList = RxList<Note>();
   RxList<Project> projectList = RxList<Project>();
+  RxList<Color> colorList = RxList<Color>();
 
   Future<void> getNotes() async {
     noteList.add(Note(
@@ -23,6 +26,16 @@ class LoadDataController extends GetxController {
         id: 3,
         content:
             "\"People grow through experience if they meet life honestly and courageously. This is how character is built.\" Eleanor Roosevelt"));
+  }
+
+  Future<void> addColors() async {
+    colorList.add(violet);
+    colorList.add(skin);
+    colorList.add(pink);
+  }
+
+  Color getColor(int i) {
+    return colorList[i];
   }
 
   Future<void> getProjects() async {
