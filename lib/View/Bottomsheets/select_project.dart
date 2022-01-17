@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:project_tasker/Controller/load_data_controller.dart';
 import 'package:project_tasker/Helper/values.dart';
 
 class SelectProjectSheet extends StatefulWidget {
@@ -13,6 +14,7 @@ class SelectProjectSheet extends StatefulWidget {
 class _SelectProjectSheetState extends State {
   late double height;
   late double width;
+  LoadDataController _loadDataController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -56,45 +58,56 @@ class _SelectProjectSheetState extends State {
                       child: Expanded(
                         child: ListView.builder(
                             scrollDirection: Axis.vertical,
-                            itemCount: 5,
+                            itemCount: _loadDataController.projectList.length,
                             itemBuilder: (BuildContext context, int index) {
-                              return Container(
-                                height: height * 0.07,
-                                width: width,
-                                margin: EdgeInsets.fromLTRB(
-                                    width * 0.055,
-                                    height * 0.02,
-                                    width * 0.055,
-                                    height * 0.005),
-                                decoration: BoxDecoration(
-                                  color: grey,
-                                  borderRadius:
-                                      BorderRadius.circular(width * 0.03),
-                                ),
+                              return CupertinoButton(
+                                onPressed: () {
+                                  _loadDataController
+                                      .selectedProjectAddTask.value = index;
+                                  Get.back();
+                                },
+                                padding: EdgeInsets.all(0),
+                                minSize: width * 0.001,
                                 child: Container(
-                                    margin: EdgeInsets.symmetric(
-                                        vertical: height * 0.01,
-                                        horizontal: width * 0.04),
-                                    height: height * 0.07,
-                                    width: width * 0.5,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          "Morning Routine",
-                                          style: GoogleFonts.poppins(
-                                              color: textLight,
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: height * 0.018),
-                                        ),
+                                  height: height * 0.07,
+                                  width: width,
+                                  margin: EdgeInsets.fromLTRB(
+                                      width * 0.055,
+                                      height * 0.02,
+                                      width * 0.055,
+                                      height * 0.005),
+                                  decoration: BoxDecoration(
+                                    color: grey,
+                                    borderRadius:
+                                        BorderRadius.circular(width * 0.03),
+                                  ),
+                                  child: Container(
+                                      margin: EdgeInsets.symmetric(
+                                          vertical: height * 0.01,
+                                          horizontal: width * 0.04),
+                                      height: height * 0.07,
+                                      width: width * 0.5,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            _loadDataController
+                                                .projectList[index]
+                                                .projectName!,
+                                            style: GoogleFonts.poppins(
+                                                color: textLight,
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: height * 0.018),
+                                          ),
 
-                                        // Icon(
-                                        //   CupertinoIcons.forward,
-                                        //   color: textLight,
-                                        // )
-                                      ],
-                                    )),
+                                          // Icon(
+                                          //   CupertinoIcons.forward,
+                                          //   color: textLight,
+                                          // )
+                                        ],
+                                      )),
+                                ),
                               );
                             }),
                       ),
@@ -145,35 +158,33 @@ class _SelectProjectSheetState extends State {
                   ),
                   CupertinoButton(
                     padding: EdgeInsets.all(0),
-                    onPressed: () {
-                      Get.back();
-                    },
+                    onPressed: null,
                     child: Container(
                       height: height * 0.07,
                       width: width * 0.42,
-                      decoration: BoxDecoration(
-                          color: light,
-                          borderRadius: BorderRadius.circular(width * 0.03)),
-                      child: Container(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            // Icon(
-                            //   CupertinoIcons.pencil_ellipsis_rectangle,
-                            //   color: violet,
-                            // ),
-                            // SizedBox(width: width * 0.015),
-                            Text(
-                              "Select",
-                              style: GoogleFonts.poppins(
-                                  color: violet,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: height * 0.022),
-                            ),
-                          ],
-                        ),
-                      ),
+                      // decoration: BoxDecoration(
+                      //     color: light,
+                      //     borderRadius: BorderRadius.circular(width * 0.03)),
+                      // child: Container(
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.center,
+                      //     crossAxisAlignment: CrossAxisAlignment.center,
+                      //     children: [
+                      //       // Icon(
+                      //       //   CupertinoIcons.pencil_ellipsis_rectangle,
+                      //       //   color: violet,
+                      //       // ),
+                      //       // SizedBox(width: width * 0.015),
+                      //       Text(
+                      //         "Select",
+                      //         style: GoogleFonts.poppins(
+                      //             color: violet,
+                      //             fontWeight: FontWeight.w400,
+                      //             fontSize: height * 0.022),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                     ),
                   )
                 ],

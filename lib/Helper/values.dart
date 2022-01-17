@@ -13,3 +13,6 @@ Color grey = Color.fromRGBO(239, 240, 250, 1);
 Color shadowGrey = Color.fromRGBO(230, 230, 230, 1);
 Color grey2 = Color.fromRGBO(229, 230, 240, 1);
 Color textLight = Color.fromRGBO(110, 110, 110, 1);
+Color greenPastel = Color.fromRGBO(194, 213, 168, 1);
+Color pinkPastel = Color.fromRGBO(243, 177, 205, 1);
+Color bluePastel = Color.fromRGBO(186, 213, 240, 1);

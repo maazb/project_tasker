@@ -5,6 +5,7 @@ class Task {
   String? taskName;
   DateTime? date;
   TimeOfDay? time;
+  bool? completed = false;
 
   Task({this.taskId, this.taskName, this.date, this.time});
 }

@@ -1,8 +1,10 @@
 // ignore_for_file: file_names
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:project_tasker/Controller/load_data_controller.dart';
 import 'package:project_tasker/Helper/values.dart';
 
 class SelectAvatarSheet extends StatefulWidget {
@@ -13,6 +15,7 @@ class SelectAvatarSheet extends StatefulWidget {
 class _SelectAvatarSheetState extends State {
   late double height;
   late double width;
+  LoadDataController _loadDataController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +61,7 @@ class _SelectAvatarSheetState extends State {
                           padding: EdgeInsets.symmetric(
                               horizontal: width * 0.04,
                               vertical: height * 0.02),
-                          itemCount: 7,
+                          itemCount: 8,
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           gridDelegate:
@@ -78,12 +81,17 @@ class _SelectAvatarSheetState extends State {
                                     BorderRadius.circular(width * 0.03),
                               ),
                               child: Container(
-                                margin: EdgeInsets.symmetric(
-                                    vertical: height * 0.01,
-                                    horizontal: width * 0.04),
-                                height: height * 0.05,
-                                width: width * 0.1,
-                              ),
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: height * 0.01,
+                                      horizontal: width * 0.04),
+                                  height: height * 0.05,
+                                  width: width * 0.1,
+                                  child: ClipRect(
+                                    child: Image.asset(
+                                      _loadDataController.getAvatar(index),
+                                      fit: BoxFit.contain,
+                                    ),
+                                  )),
                             );
                           },
                         ),

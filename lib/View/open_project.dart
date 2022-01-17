@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:project_tasker/Controller/load_data_controller.dart';
 import 'package:project_tasker/Helper/values.dart';
 
 class OpenProject extends StatefulWidget {
@@ -12,6 +13,7 @@ class OpenProject extends StatefulWidget {
 }
 
 class _OpenProjectState extends State {
+  LoadDataController _loadDataController = Get.find();
   late double height;
   late double width;
   @override
@@ -56,7 +58,9 @@ class _OpenProjectState extends State {
               Container(
                 child: Expanded(
                   child: Text(
-                    "Morning Routine",
+                    _loadDataController
+                        .projectList[_loadDataController.selectedProject.value]
+                        .projectName!,
                     style: GoogleFonts.poppins(
                         color: textColor,
                         fontWeight: FontWeight.w600,
@@ -99,7 +103,11 @@ class _OpenProjectState extends State {
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
-                      itemCount: 10,
+                      itemCount: _loadDataController
+                          .projectList[
+                              _loadDataController.selectedProject.value]
+                          .tasks
+                          .length,
                       itemBuilder: (BuildContext context, int index) {
                         return Column(
                           children: [
@@ -132,7 +140,11 @@ class _OpenProjectState extends State {
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          "Do a 10 mile walk in the morning and eat healthy breakfast.",
+                                          _loadDataController
+                                              .projectList[_loadDataController
+                                                  .selectedProject.value]
+                                              .tasks[index]
+                                              .taskName!,
                                           style: GoogleFonts.poppins(
                                               color: textColor,
                                               fontWeight: FontWeight.w400,

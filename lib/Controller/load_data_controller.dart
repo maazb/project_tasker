@@ -9,6 +9,13 @@ class LoadDataController extends GetxController {
   RxList<Project> projectList = RxList<Project>();
   RxList<Color> colorList = RxList<Color>();
 
+  RxInt selectedProject = 0.obs;
+  RxInt selectedProjectAddTask = 0.obs;
+  RxInt selectedColor = 0.obs;
+  RxInt selectedAvatarAddProject = 0.obs;
+  RxInt selectedAvatar = 0.obs;
+  RxInt selectedColorAddProject = 0.obs;
+
   Future<void> getNotes() async {
     noteList.add(Note(
         id: 0,
@@ -29,22 +36,52 @@ class LoadDataController extends GetxController {
   }
 
   Future<void> addColors() async {
-    colorList.add(violet);
+    colorList.add(greenPastel);
     colorList.add(skin);
     colorList.add(pink);
+    colorList.add(lightViolet);
+    colorList.add(green);
+    colorList.add(bluePastel);
+    colorList.add(pinkPastel);
   }
 
   Color getColor(int i) {
     return colorList[i];
   }
 
+  String getAvatar(int i) {
+    if (i == 0) {
+      return "assets/images/avatar1.png";
+    } else if (i == 1) {
+      return "assets/images/avatar2.png";
+    } else if (i == 2) {
+      return "assets/images/avatar3.png";
+    } else if (i == 3) {
+      return "assets/images/avatar4.png";
+    } else if (i == 4) {
+      return "assets/images/avatar5.png";
+    } else if (i == 5) {
+      return "assets/images/avatar6.png";
+    } else if (i == 6) {
+      return "assets/images/avatar7.png";
+    } else if (i == 7) {
+      return "assets/images/avatar8.png";
+    } else {
+      return "assets/images/avatar1.png";
+    }
+  }
+
   Future<void> getProjects() async {
+    projectList.add(Project(
+        projectName: "Course Project", projectAvatar: 4, projectColor: 3));
     projectList.add(
-        Project(projectName: "Project 1", projectAvatar: 2, projectColor: 3));
-    projectList.add(
-        Project(projectName: "Project 2", projectAvatar: 3, projectColor: 2));
-    projectList.add(
-        Project(projectName: "Project 3", projectAvatar: 3, projectColor: 1));
+        Project(projectName: "Assignments", projectAvatar: 3, projectColor: 2));
+    projectList.add(Project(
+        projectName: "CV and Job hunt", projectAvatar: 2, projectColor: 1));
+    projectList.add(Project(
+        projectName: "Evening Schedule", projectAvatar: 5, projectColor: 4));
+    projectList.add(Project(
+        projectName: "Shopping List", projectAvatar: 1, projectColor: 6));
   }
 
   @override

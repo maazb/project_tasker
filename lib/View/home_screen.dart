@@ -340,7 +340,10 @@ class _HomeScreenState extends State {
                                   )
                                 ],
                               );
-                            }))
+                            })),
+                    SizedBox(
+                      height: height * 0.15,
+                    )
                   ],
                 ),
               )

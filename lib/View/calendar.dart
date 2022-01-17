@@ -320,7 +320,10 @@ class _CalendarState extends State {
                             )
                           ],
                         );
-                      }))
+                      })),
+              SizedBox(
+                height: height * 0.15,
+              )
             ],
           ),
         ),
