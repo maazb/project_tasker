@@ -195,26 +195,26 @@ class _CalendarState extends State {
                             ),
                             todayTextStyle: GoogleFonts.poppins(
                               fontSize: height * 0.018,
-                              color: lightViolet,
+                              color: secondaryColor,
                               fontWeight: FontWeight.w200,
                             ),
                             disabledTextStyle: GoogleFonts.poppins(
                               fontSize: height * 0.018,
-                              color: lightViolet,
+                              color: secondaryColor,
                               fontWeight: FontWeight.w200,
                             ),
                             rangeEndTextStyle: GoogleFonts.poppins(
                               fontSize: height * 0.018,
-                              color: lightViolet,
+                              color: secondaryColor,
                               fontWeight: FontWeight.w200,
                             ),
                             outsideTextStyle: GoogleFonts.poppins(
                               fontSize: height * 0.018,
-                              color: lightViolet,
+                              color: secondaryColor,
                               fontWeight: FontWeight.w200,
                             ),
                             selectedDecoration: BoxDecoration(
-                              color: violet,
+                              color: primaryColor,
                               shape: BoxShape.circle,
                             ),
                             isTodayHighlighted: false,
@@ -224,7 +224,7 @@ class _CalendarState extends State {
                             //   shape: BoxShape.circle,
                             // ),
                             markerDecoration: BoxDecoration(
-                              color: violet,
+                              color: primaryColor,
                               shape: BoxShape.circle,
                             ),
                           ),

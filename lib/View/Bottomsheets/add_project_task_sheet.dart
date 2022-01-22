@@ -83,7 +83,7 @@ class _AddProjectTaskSheetState extends State {
                       child: TextField(
                         decoration: InputDecoration(
                             border: InputBorder.none, hintText: "Task name..."),
-                        cursorColor: violet,
+                        cursorColor: primaryColor,
                         style: GoogleFonts.poppins(
                             color: textColor,
                             fontWeight: FontWeight.w400,
@@ -255,7 +255,7 @@ class _AddProjectTaskSheetState extends State {
                                 Text(
                                   "Discard",
                                   style: GoogleFonts.poppins(
-                                      color: violet,
+                                      color: primaryColor,
                                       fontWeight: FontWeight.w400,
                                       fontSize: height * 0.022),
                                 ),
@@ -289,7 +289,7 @@ class _AddProjectTaskSheetState extends State {
                                 Text(
                                   "Add",
                                   style: GoogleFonts.poppins(
-                                      color: violet,
+                                      color: primaryColor,
                                       fontWeight: FontWeight.w400,
                                       fontSize: height * 0.022),
                                 ),

@@ -83,7 +83,7 @@ class _AddProjectSheetState extends State {
                                   decoration: InputDecoration(
                                       border: InputBorder.none,
                                       hintText: "Project name..."),
-                                  cursorColor: violet,
+                                  cursorColor: primaryColor,
                                   style: GoogleFonts.poppins(
                                       color: textColor,
                                       fontWeight: FontWeight.w400,
@@ -240,7 +240,7 @@ class _AddProjectSheetState extends State {
                               Text(
                                 "Discard",
                                 style: GoogleFonts.poppins(
-                                    color: violet,
+                                    color: primaryColor,
                                     fontWeight: FontWeight.w400,
                                     fontSize: height * 0.022),
                               ),
@@ -279,7 +279,7 @@ class _AddProjectSheetState extends State {
                               Text(
                                 "Add",
                                 style: GoogleFonts.poppins(
-                                    color: violet,
+                                    color: primaryColor,
                                     fontWeight: FontWeight.w400,
                                     fontSize: height * 0.022),
                               ),

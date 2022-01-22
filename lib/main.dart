@@ -46,6 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _loadDataController.getNotes();
     _loadDataController.getProjects();
     _loadDataController.addColors();
+    _loadDataController.addThemes();
   }
 
   //LoadDataController _loadDataController = Get.find();
@@ -85,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
         margin: EdgeInsets.all(height * 0.03),
         child: CircularProgressIndicator(
           strokeWidth: width * 0.01,
-          color: violet,
+          color: primaryColor,
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

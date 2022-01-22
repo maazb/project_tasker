@@ -123,7 +123,7 @@ class _PrivacyPolicySheetState extends State {
                             Text(
                               "OK",
                               style: GoogleFonts.poppins(
-                                  color: violet,
+                                  color: primaryColor,
                                   fontWeight: FontWeight.w400,
                                   fontSize: height * 0.022),
                             ),

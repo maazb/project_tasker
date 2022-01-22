@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:project_tasker/Controller/load_data_controller.dart';
 import 'package:project_tasker/Helper/values.dart';
 import 'package:project_tasker/View/Bottomsheets/add_note_sheet.dart';
 import 'package:project_tasker/View/Bottomsheets/add_project_sheet.dart';
@@ -17,6 +18,7 @@ class AddSheet extends StatefulWidget {
 class _AddSheetState extends State {
   late double height;
   late double width;
+  LoadDataController _loadDataController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +62,10 @@ class _AddSheetState extends State {
                   padding: EdgeInsets.all(0),
                   onPressed: () {
                     Get.back();
-                    Get.bottomSheet(AddTaskSheet());
+                    Get.bottomSheet(AddTaskSheet()).then((value) {
+                      _loadDataController.getTodayTasks();
+                      _loadDataController.getTodayCompletedTasks();
+                    });
                   },
                   child: Container(
                     height: height * 0.07,
@@ -75,13 +80,13 @@ class _AddSheetState extends State {
                         children: [
                           Icon(
                             CupertinoIcons.checkmark_square,
-                            color: violet,
+                            color: primaryColor,
                           ),
                           SizedBox(width: width * 0.015),
                           Text(
                             "Task",
                             style: GoogleFonts.poppins(
-                                color: violet,
+                                color: primaryColor,
                                 fontWeight: FontWeight.w400,
                                 fontSize: height * 0.022),
                           ),
@@ -109,13 +114,13 @@ class _AddSheetState extends State {
                         children: [
                           Icon(
                             CupertinoIcons.square_list,
-                            color: violet,
+                            color: primaryColor,
                           ),
                           SizedBox(width: width * 0.015),
                           Text(
                             "Project",
                             style: GoogleFonts.poppins(
-                                color: violet,
+                                color: primaryColor,
                                 fontWeight: FontWeight.w400,
                                 fontSize: height * 0.022),
                           ),
@@ -143,13 +148,13 @@ class _AddSheetState extends State {
                         children: [
                           Icon(
                             CupertinoIcons.pencil_ellipsis_rectangle,
-                            color: violet,
+                            color: primaryColor,
                           ),
                           SizedBox(width: width * 0.015),
                           Text(
                             "Note",
                             style: GoogleFonts.poppins(
-                                color: violet,
+                                color: primaryColor,
                                 fontWeight: FontWeight.w400,
                                 fontSize: height * 0.022),
                           ),

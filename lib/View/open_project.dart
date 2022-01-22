@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:project_tasker/Components/bottom_navigation.dart';
 import 'package:project_tasker/Controller/load_data_controller.dart';
 import 'package:project_tasker/Helper/values.dart';
 
@@ -22,169 +23,212 @@ class _OpenProjectState extends State {
     width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: white,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
         backgroundColor: white,
-        foregroundColor: textColor,
-        elevation: 0,
-        systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarBrightness: Brightness.light,
-          statusBarColor: white,
-          statusBarIconBrightness: Brightness.dark,
-        ),
-        toolbarHeight: height * 0.1,
-        //leadingWidth: width * 0.055,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: white,
+          foregroundColor: textColor,
+          elevation: 0,
+          systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarBrightness: Brightness.light,
+            statusBarColor: white,
+            statusBarIconBrightness: Brightness.dark,
+          ),
+          toolbarHeight: height * 0.1,
+          //leadingWidth: width * 0.055,
 
-        leading: CupertinoButton(
-          onPressed: () => Get.back(),
-          padding: EdgeInsets.all(0),
-          child: Container(
-            margin: EdgeInsets.symmetric(horizontal: width * 0.055),
-            child: Icon(
-              Icons.arrow_back,
-              color: textColor,
+          leading: CupertinoButton(
+            onPressed: () => Get.back(),
+            padding: EdgeInsets.all(0),
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: width * 0.055),
+              child: Icon(
+                Icons.arrow_back,
+                color: textColor,
+              ),
+            ),
+          ),
+          title: Container(
+            margin: EdgeInsets.only(left: width * 0.0, right: width * 0.02),
+            width: width,
+            height: height * 0.1,
+            //color: violet,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  child: Expanded(
+                    child: Text(
+                      _loadDataController
+                          .projectList[
+                              _loadDataController.selectedProject.value]
+                          .projectName!,
+                      style: GoogleFonts.poppins(
+                          color: textColor,
+                          fontWeight: FontWeight.w600,
+                          fontSize: height * 0.033),
+                    ),
+                  ),
+                ),
+                Container(
+                    //   child: Stack(
+                    // children: [
+                    //   Icon(
+                    //     CupertinoIcons.,
+                    //     color: textColor,
+                    //   ),
+                    //   Positioned(
+                    //       right: width * 0.00,
+                    //       top: height * 0.00,
+                    //       child: Container(
+                    //         height: width * 0.018,
+                    //         width: width * 0.018,
+                    //         decoration: BoxDecoration(
+                    //             color: green,
+                    //             borderRadius: BorderRadius.circular(width * 5)),
+                    //  ))
+                    // ],
+                    //)
+                    )
+              ],
             ),
           ),
         ),
-        title: Container(
-          margin: EdgeInsets.only(left: width * 0.0, right: width * 0.02),
-          width: width,
-          height: height * 0.1,
-          //color: violet,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                child: Expanded(
-                  child: Text(
-                    _loadDataController
-                        .projectList[_loadDataController.selectedProject.value]
-                        .projectName!,
-                    style: GoogleFonts.poppins(
-                        color: textColor,
-                        fontWeight: FontWeight.w600,
-                        fontSize: height * 0.033),
-                  ),
-                ),
-              ),
-              Container(
-                  //   child: Stack(
-                  // children: [
-                  //   Icon(
-                  //     CupertinoIcons.,
-                  //     color: textColor,
-                  //   ),
-                  //   Positioned(
-                  //       right: width * 0.00,
-                  //       top: height * 0.00,
-                  //       child: Container(
-                  //         height: width * 0.018,
-                  //         width: width * 0.018,
-                  //         decoration: BoxDecoration(
-                  //             color: green,
-                  //             borderRadius: BorderRadius.circular(width * 5)),
-                  //  ))
-                  // ],
-                  //)
-                  )
-            ],
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          child: Column(
-            children: [
-              Container(
-                  margin: EdgeInsets.symmetric(horizontal: width * 0.055),
-                  //height: height * 0.2,
-                  child: ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: _loadDataController
-                          .projectList[
-                              _loadDataController.selectedProject.value]
-                          .tasks
-                          .length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Column(
-                          children: [
-                            index == 0
-                                ? SizedBox(
-                                    height: height * 0.018,
-                                  )
-                                : Container(),
-                            Container(
-                              height: height * 0.1,
-                              width: width,
-                              decoration: BoxDecoration(
-                                  color: white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                        offset: Offset(0, 4),
-                                        color: grey2,
-                                        blurRadius: 15)
-                                  ],
-                                  borderRadius:
-                                      BorderRadius.circular(width * 0.06)),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: height * 0.02,
-                                    horizontal: width * 0.04),
-                                child: Center(
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          _loadDataController
-                                              .projectList[_loadDataController
-                                                  .selectedProject.value]
-                                              .tasks[index]
-                                              .taskName!,
-                                          style: GoogleFonts.poppins(
-                                              color: textColor,
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: height * 0.020),
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.only(
-                                            right: width * 0.02,
-                                            left: width * 0.04),
-                                        child: Center(
+        body: SingleChildScrollView(
+          child: Container(
+            child: Column(
+              children: [
+                Obx(
+                  () => Container(
+                      margin: EdgeInsets.symmetric(horizontal: width * 0.055),
+                      //height: height * 0.2,
+                      child: _loadDataController
+                              .projectList[
+                                  _loadDataController.selectedProject.value]
+                              .tasks
+                              .isEmpty
+                          ? Container()
+                          : Obx(
+                              () => ListView.builder(
+                                  scrollDirection: Axis.vertical,
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: _loadDataController
+                                      .projectList[_loadDataController
+                                          .selectedProject.value]
+                                      .tasks
+                                      .length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return Column(
+                                      children: [
+                                        index == 0
+                                            ? SizedBox(
+                                                height: height * 0.018,
+                                              )
+                                            : Container(),
+                                        GestureDetector(
+                                          onPanUpdate: (details) {
+                                            _loadDataController
+                                                .projectList[_loadDataController
+                                                    .selectedProject.value]
+                                                .tasks
+                                                .remove(_loadDataController
+                                                    .projectList[
+                                                        _loadDataController
+                                                            .selectedProject
+                                                            .value]
+                                                    .tasks[index]);
+                                          },
                                           child: Container(
-                                            height: width * 0.05,
-                                            width: width * 0.05,
+                                            height: height * 0.1,
+                                            width: width,
                                             decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: textColor,
-                                                    style: BorderStyle.solid,
-                                                    width: width * 0.0025),
+                                                color: white,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                      offset: Offset(0, 4),
+                                                      color: grey2,
+                                                      blurRadius: 15)
+                                                ],
                                                 borderRadius:
                                                     BorderRadius.circular(
-                                                        width * 0.015)),
+                                                        width * 0.06)),
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: height * 0.02,
+                                                  horizontal: width * 0.04),
+                                              child: Center(
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                        _loadDataController
+                                                            .projectList[
+                                                                _loadDataController
+                                                                    .selectedProject
+                                                                    .value]
+                                                            .tasks[index]
+                                                            .taskName!,
+                                                        style:
+                                                            GoogleFonts.poppins(
+                                                                color:
+                                                                    textColor,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                fontSize:
+                                                                    height *
+                                                                        0.020),
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                      padding: EdgeInsets.only(
+                                                          right: width * 0.02,
+                                                          left: width * 0.04),
+                                                      child: Center(
+                                                        child: Container(
+                                                          height: width * 0.05,
+                                                          width: width * 0.05,
+                                                          decoration: BoxDecoration(
+                                                              border: Border.all(
+                                                                  color:
+                                                                      textColor,
+                                                                  style:
+                                                                      BorderStyle
+                                                                          .solid,
+                                                                  width: width *
+                                                                      0.0025),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          width *
+                                                                              0.015)),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              height: height * 0.02,
-                            )
-                          ],
-                        );
-                      }))
-            ],
+                                        SizedBox(
+                                          height: height * 0.02,
+                                        )
+                                      ],
+                                    );
+                                  }),
+                            )),
+                )
+              ],
+            ),
           ),
         ),
-      ),
-    );
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: BottomNavigation());
   }
 }

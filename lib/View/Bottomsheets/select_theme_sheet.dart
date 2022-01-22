@@ -3,7 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:project_tasker/Controller/load_data_controller.dart';
 import 'package:project_tasker/Helper/values.dart';
+import 'package:project_tasker/View/account.dart';
 
 class SelectThemeSheet extends StatefulWidget {
   @override
@@ -13,6 +15,7 @@ class SelectThemeSheet extends StatefulWidget {
 class _SelectThemeSheetState extends State {
   late double height;
   late double width;
+  LoadDataController _loadDataController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +46,7 @@ class _SelectThemeSheetState extends State {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            "Select Theme",
+                            "Select Color",
                             style: GoogleFonts.poppins(
                                 color: textColor,
                                 fontWeight: FontWeight.w600,
@@ -58,7 +61,7 @@ class _SelectThemeSheetState extends State {
                           padding: EdgeInsets.symmetric(
                               horizontal: width * 0.04,
                               vertical: height * 0.02),
-                          itemCount: 7,
+                          itemCount: 4,
                           shrinkWrap: true,
                           physics: NeverScrollableScrollPhysics(),
                           gridDelegate:
@@ -68,21 +71,30 @@ class _SelectThemeSheetState extends State {
                                   crossAxisSpacing: width * 0.02,
                                   childAspectRatio: 1),
                           itemBuilder: (builder, index) {
-                            return Container(
-                              //height: height * 0.07,
-                              //width: width,
-
-                              decoration: BoxDecoration(
-                                color: grey,
-                                borderRadius:
-                                    BorderRadius.circular(width * 0.03),
-                              ),
+                            return CupertinoButton(
+                              onPressed: () {
+                                _loadDataController.getTheme(index);
+                                Get.offAll(Account());
+                              },
+                              padding: EdgeInsets.all(0),
+                              minSize: width * 0.001,
                               child: Container(
-                                margin: EdgeInsets.symmetric(
-                                    vertical: height * 0.01,
-                                    horizontal: width * 0.04),
-                                height: height * 0.05,
-                                width: width * 0.1,
+                                //height: height * 0.07,
+                                //width: width,
+
+                                decoration: BoxDecoration(
+                                  color:
+                                      _loadDataController.getThemeColor(index),
+                                  borderRadius:
+                                      BorderRadius.circular(width * 0.03),
+                                ),
+                                child: Container(
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: height * 0.01,
+                                      horizontal: width * 0.04),
+                                  height: height * 0.05,
+                                  width: width * 0.1,
+                                ),
                               ),
                             );
                           },
@@ -124,7 +136,7 @@ class _SelectThemeSheetState extends State {
                             Text(
                               "Cancel",
                               style: GoogleFonts.poppins(
-                                  color: violet,
+                                  color: primaryColor,
                                   fontWeight: FontWeight.w400,
                                   fontSize: height * 0.022),
                             ),
@@ -135,35 +147,33 @@ class _SelectThemeSheetState extends State {
                   ),
                   CupertinoButton(
                     padding: EdgeInsets.all(0),
-                    onPressed: () {
-                      Get.back();
-                    },
+                    onPressed: null,
                     child: Container(
                       height: height * 0.07,
                       width: width * 0.42,
-                      decoration: BoxDecoration(
-                          color: light,
-                          borderRadius: BorderRadius.circular(width * 0.03)),
-                      child: Container(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            // Icon(
-                            //   CupertinoIcons.pencil_ellipsis_rectangle,
-                            //   color: violet,
-                            // ),
-                            // SizedBox(width: width * 0.015),
-                            Text(
-                              "Apply",
-                              style: GoogleFonts.poppins(
-                                  color: violet,
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: height * 0.022),
-                            ),
-                          ],
-                        ),
-                      ),
+                      // decoration: BoxDecoration(
+                      //     color: light,
+                      //     borderRadius: BorderRadius.circular(width * 0.03)),
+                      // child: Container(
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.center,
+                      //     crossAxisAlignment: CrossAxisAlignment.center,
+                      //     children: [
+                      //       // Icon(
+                      //       //   CupertinoIcons.pencil_ellipsis_rectangle,
+                      //       //   color: violet,
+                      //       // ),
+                      //       // SizedBox(width: width * 0.015),
+                      //       Text(
+                      //         "Select",
+                      //         style: GoogleFonts.poppins(
+                      //             color: violet,
+                      //             fontWeight: FontWeight.w400,
+                      //             fontSize: height * 0.022),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                     ),
                   )
                 ],

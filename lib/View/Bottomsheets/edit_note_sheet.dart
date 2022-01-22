@@ -1,4 +1,3 @@
-// ignore_for_file: file_names
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,16 +6,27 @@ import 'package:project_tasker/Controller/load_data_controller.dart';
 import 'package:project_tasker/Helper/values.dart';
 import 'package:project_tasker/Model/note.dart';
 
-class AddNoteSheet extends StatefulWidget {
+class EditNoteSheet extends StatefulWidget {
+  int? index;
+  String? note;
+  EditNoteSheet({Key? key, this.index, this.note}) : super(key: key);
+
   @override
-  State<StatefulWidget> createState() => _AddNoteSheetState();
+  _EditNoteSheetState createState() => _EditNoteSheetState();
 }
 
-class _AddNoteSheetState extends State {
+class _EditNoteSheetState extends State<EditNoteSheet> {
   late double height;
   late double width;
   LoadDataController _loadDataController = Get.find();
   TextEditingController _textEditingController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _textEditingController.text = widget.note!;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +53,7 @@ class _AddNoteSheetState extends State {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
-                    "Add note",
+                    "Edit note",
                     style: GoogleFonts.poppins(
                         color: textColor,
                         fontWeight: FontWeight.w600,
@@ -68,11 +78,11 @@ class _AddNoteSheetState extends State {
                           vertical: height * 0.01, horizontal: width * 0.04),
                       height: height * 0.1,
                       width: width * 0.5,
-                      child: TextField(
+                      child: TextFormField(
                         controller: _textEditingController,
                         decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Write here..."),
+                          border: InputBorder.none,
+                        ),
                         cursorColor: primaryColor,
                         style: GoogleFonts.poppins(
                             color: textColor,
@@ -124,9 +134,12 @@ class _AddNoteSheetState extends State {
                       CupertinoButton(
                         padding: EdgeInsets.all(0),
                         onPressed: () {
-                          _loadDataController.noteList.add(Note(
-                              id: _loadDataController.noteList.length + 1,
-                              content: _textEditingController.text));
+                          // _loadDataController.noteList.add(Note(
+                          //     id: _loadDataController.noteList.length + 1,
+                          //     content: _textEditingController.text));
+                          _loadDataController.noteList[widget.index!] = Note(
+                              id: widget.index,
+                              content: _textEditingController.text);
                           Get.back();
                         },
                         child: Container(
@@ -147,7 +160,7 @@ class _AddNoteSheetState extends State {
                                 // ),
                                 // SizedBox(width: width * 0.015),
                                 Text(
-                                  "Add",
+                                  "Edit",
                                   style: GoogleFonts.poppins(
                                       color: primaryColor,
                                       fontWeight: FontWeight.w400,

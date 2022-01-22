@@ -140,7 +140,7 @@ class _SelectProjectAvatarSheetState extends State {
                             Text(
                               "Cancel",
                               style: GoogleFonts.poppins(
-                                  color: violet,
+                                  color: primaryColor,
                                   fontWeight: FontWeight.w400,
                                   fontSize: height * 0.022),
                             ),

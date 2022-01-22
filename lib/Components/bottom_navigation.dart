@@ -40,12 +40,12 @@ class _BottomNavigationState extends State {
                 child: Get.currentRoute == "/HomeScreen"
                     ? Icon(
                         CupertinoIcons.house_alt,
-                        color: violet,
+                        color: primaryColor,
                         size: width * 0.06,
                       )
                     : Icon(
                         CupertinoIcons.house_alt,
-                        color: lightViolet,
+                        color: secondaryColor,
                         size: width * 0.06,
                       ),
                 onPressed: () {
@@ -56,12 +56,12 @@ class _BottomNavigationState extends State {
                 child: Get.currentRoute == "/Projects"
                     ? Icon(
                         CupertinoIcons.square_list,
-                        color: violet,
+                        color: primaryColor,
                         size: width * 0.06,
                       )
                     : Icon(
                         CupertinoIcons.square_list,
-                        color: lightViolet,
+                        color: secondaryColor,
                         size: width * 0.06,
                       ),
                 onPressed: () {
@@ -71,7 +71,7 @@ class _BottomNavigationState extends State {
                 padding: EdgeInsets.all(0),
                 child: Icon(
                   CupertinoIcons.add_circled,
-                  color: violet,
+                  color: primaryColor,
                   size: width * 0.1,
                 ),
                 onPressed: () {
@@ -82,12 +82,12 @@ class _BottomNavigationState extends State {
                 child: Get.currentRoute == "/Calendar"
                     ? Icon(
                         CupertinoIcons.calendar,
-                        color: violet,
+                        color: primaryColor,
                         size: width * 0.06,
                       )
                     : Icon(
                         CupertinoIcons.calendar,
-                        color: lightViolet,
+                        color: secondaryColor,
                         size: width * 0.06,
                       ),
                 onPressed: () {
@@ -98,12 +98,12 @@ class _BottomNavigationState extends State {
                 child: Get.currentRoute == "/Account"
                     ? Icon(
                         CupertinoIcons.person,
-                        color: violet,
+                        color: primaryColor,
                         size: width * 0.06,
                       )
                     : Icon(
                         CupertinoIcons.person,
-                        color: lightViolet,
+                        color: secondaryColor,
                         size: width * 0.06,
                       ),
                 onPressed: () {
