@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:project_tasker/Controller/database.dart';
 import 'package:project_tasker/Controller/load_data_controller.dart';
 import 'package:project_tasker/Helper/values.dart';
 import 'package:project_tasker/Model/project.dart';
@@ -20,6 +21,7 @@ class _AddProjectSheetState extends State {
   late double width;
   LoadDataController _loadDataController = Get.find();
   TextEditingController _textEditingController = TextEditingController();
+  Database _database = Database();
 
   @override
   Widget build(BuildContext context) {
@@ -258,6 +260,13 @@ class _AddProjectSheetState extends State {
                                 .selectedColorAddProject.value,
                             projectAvatar: _loadDataController
                                 .selectedAvatarAddProject.value));
+
+                        _database.deleteProjectList(
+                            _loadDataController.currentUserId.value);
+
+                        _loadDataController.projectListUpload(
+                            _loadDataController.currentUserId.value);
+
                         Get.back();
                       },
                       child: Container(

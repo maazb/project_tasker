@@ -46,6 +46,9 @@ dependencies:
   multi_image_picker2: ^5.0.2
   open_app_settings: ^2.0.1
   #flutter_absolute_path: ^1.0.6
+  firebase_core: ^1.11.0
+  firebase_auth: ^3.3.5
+  firebase_database: ^9.0.5
 
 dev_dependencies:
   flutter_test:

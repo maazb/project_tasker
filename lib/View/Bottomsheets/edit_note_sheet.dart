@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:project_tasker/Controller/database.dart';
 import 'package:project_tasker/Controller/load_data_controller.dart';
 import 'package:project_tasker/Helper/values.dart';
 import 'package:project_tasker/Model/note.dart';
@@ -20,6 +21,7 @@ class _EditNoteSheetState extends State<EditNoteSheet> {
   late double width;
   LoadDataController _loadDataController = Get.find();
   TextEditingController _textEditingController = TextEditingController();
+  Database _database = Database();
 
   @override
   void initState() {
@@ -134,12 +136,19 @@ class _EditNoteSheetState extends State<EditNoteSheet> {
                       CupertinoButton(
                         padding: EdgeInsets.all(0),
                         onPressed: () {
+                          _database.saveNote(
+                              Note(
+                                  id: widget.index,
+                                  content: _textEditingController.text),
+                              widget.index!,
+                              _loadDataController.currentUserId.value);
                           // _loadDataController.noteList.add(Note(
                           //     id: _loadDataController.noteList.length + 1,
                           //     content: _textEditingController.text));
                           _loadDataController.noteList[widget.index!] = Note(
                               id: widget.index,
                               content: _textEditingController.text);
+
                           Get.back();
                         },
                         child: Container(

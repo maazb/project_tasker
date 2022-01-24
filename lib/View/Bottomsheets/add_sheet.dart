@@ -62,10 +62,21 @@ class _AddSheetState extends State {
                   padding: EdgeInsets.all(0),
                   onPressed: () {
                     Get.back();
-                    Get.bottomSheet(AddTaskSheet()).then((value) {
-                      _loadDataController.getTodayTasks();
-                      _loadDataController.getTodayCompletedTasks();
-                    });
+                    _loadDataController.projectList.length > 0
+                        ? Get.bottomSheet(AddTaskSheet()).then((value) {
+                            //_loadDataController.getTodayTasks();
+                            //_loadDataController.getTodayCompletedTasks();
+                          })
+                        : Get.showSnackbar(GetSnackBar(
+                            duration: const Duration(seconds: 5),
+                            messageText: Text(
+                              "Please add a project before adding tasks.",
+                              style: GoogleFonts.poppins(
+                                  color: white,
+                                  fontSize: height * 0.02,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          ));
                   },
                   child: Container(
                     height: height * 0.07,

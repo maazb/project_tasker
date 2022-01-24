@@ -3,9 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:project_tasker/Controller/database.dart';
 import 'package:project_tasker/Controller/load_data_controller.dart';
 import 'package:project_tasker/Helper/values.dart';
 import 'package:project_tasker/Model/note.dart';
+import 'package:project_tasker/data/note_dao.dart';
 
 class AddNoteSheet extends StatefulWidget {
   @override
@@ -17,7 +19,7 @@ class _AddNoteSheetState extends State {
   late double width;
   LoadDataController _loadDataController = Get.find();
   TextEditingController _textEditingController = TextEditingController();
-
+  Database _database = Database();
   @override
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
@@ -124,9 +126,26 @@ class _AddNoteSheetState extends State {
                       CupertinoButton(
                         padding: EdgeInsets.all(0),
                         onPressed: () {
+                          // _database.saveNote(
+                          //     Note(
+                          //         id: _loadDataController.noteList.length,
+                          //         content: _textEditingController.text),
+                          //     _loadDataController.currentUserId.value);
                           _loadDataController.noteList.add(Note(
-                              id: _loadDataController.noteList.length + 1,
+                              id: _loadDataController.noteList.length,
                               content: _textEditingController.text));
+
+                          _database.deleteNoteList(
+                              _loadDataController.currentUserId.value);
+
+                          _loadDataController.noteListUpload(
+                              _loadDataController.currentUserId.value);
+
+                          //print(_loadDataController.noteList.value.toString());
+
+                          // _database.saveNoteLimit(
+                          //     _loadDataController.noteList.length,
+                          //     _loadDataController.currentUserId.value);
                           Get.back();
                         },
                         child: Container(

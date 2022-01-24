@@ -1,6 +1,8 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:project_tasker/Controller/database.dart';
 import 'package:project_tasker/Helper/values.dart';
 import 'package:project_tasker/Model/note.dart';
 import 'package:project_tasker/Model/project.dart';
@@ -9,10 +11,16 @@ import 'package:project_tasker/Model/task.dart';
 class LoadDataController extends GetxController {
   RxList<Note> noteList = RxList<Note>();
   RxList<Project> projectList = RxList<Project>();
+  RxList<Task> taskList = RxList<Task>();
   RxList<Color> colorList = RxList<Color>();
   RxList<Color> themeList = RxList<Color>();
   RxList<Task> todayTaskList = RxList<Task>();
   RxInt completedTodayTasks = 0.obs;
+  RxInt todayTasks = 0.obs;
+
+  RxString currentUserId = "".obs;
+  RxString currentUserName = "".obs;
+  RxString currentUserEmail = "".obs;
 
   RxString selectedHomeAvatar = "assets/images/avatar1.png".obs;
 
@@ -23,44 +31,94 @@ class LoadDataController extends GetxController {
   RxInt selectedAvatar = 0.obs;
   RxInt selectedColorAddProject = 0.obs;
 
+  Database db = Database();
+
   Future<void> getTodayTasks() async {
-    for (var i = 0; i < projectList.length; i++) {
-      for (var j = 0; j < projectList[i].tasks.length; j++) {
-        if (projectList[i].tasks[j].date!.day == DateTime.now().day) {
-          if (todayTaskList.contains(projectList[i].tasks[j]) == false) {
-            todayTaskList.add(projectList[i].tasks[j]);
-          }
+    for (var j = 0; j < taskList.length; j++) {
+      if (taskList[j].date!.day == DateTime.now().day) {
+        if (todayTaskList.contains(taskList[j]) == false) {
+          todayTaskList.add(taskList[j]);
         }
+      }
+    }
+  }
+
+  Future<void> getTodayTotalTasks() async {
+    todayTasks.value = 0;
+    for (var i = 0; i < taskList.length; i++) {
+      if (taskList[i].date!.day == DateTime.now().day) {
+        todayTasks.value++;
       }
     }
   }
 
   Future<void> getTodayCompletedTasks() async {
     completedTodayTasks.value = 0;
-    for (var i = 0; i < todayTaskList.length; i++) {
-      if (todayTaskList[i].completed == true) {
-        completedTodayTasks.value++;
+    for (var i = 0; i < taskList.length; i++) {
+      if (taskList[i].date!.day == DateTime.now().day) {
+        if (taskList[i].completed == true) {
+          completedTodayTasks.value++;
+        }
       }
     }
   }
 
-  Future<void> getNotes() async {
-    noteList.add(Note(
-        id: 0,
-        content:
-            "\"Life is not about how fast you run or how high you climb, but how well you bounce.\" Vivian Komori"));
-    noteList.add(Note(
-        id: 1,
-        content:
-            "\"Life is not a problem to be solved, but a reality to be experienced.\" Soren Kierkegaard"));
-    noteList.add(Note(
-        id: 2,
-        content:
-            "\"Anyone who stops learning is old, whether at twenty or eighty. Anyone who keeps learning stays young. The greatest thing in life is to keep your mind young.\" Henry Ford"));
-    noteList.add(Note(
-        id: 3,
-        content:
-            "\"People grow through experience if they meet life honestly and courageously. This is how character is built.\" Eleanor Roosevelt"));
+  Future<void> getNotes(String uid) async {
+    DatabaseEvent event =
+        await FirebaseDatabase.instance.ref('users/$uid/notes/').once();
+
+    print(event.snapshot.value.toString());
+
+    if (event.snapshot.value != null) {
+      List<dynamic> sad = event.snapshot.value as List<dynamic>;
+
+      noteList.value = noteListFromJson(sad);
+      //print(noteList);
+    }
+  }
+
+  Future<void> getTasks(String uid) async {
+    DatabaseEvent event =
+        await FirebaseDatabase.instance.ref('users/$uid/tasks/').once();
+    print(event.snapshot.value.toString());
+
+    if (event.snapshot.value != null) {
+      List<dynamic> sad = event.snapshot.value as List<dynamic>;
+
+      taskList.value = taskListFromJson(sad);
+      //print(taskList);
+    }
+  }
+
+  Future<void> getProjects(String uid) async {
+    DatabaseEvent event =
+        await FirebaseDatabase.instance.ref('users/$uid/projects/').once();
+    print(event.snapshot.value.toString());
+
+    if (event.snapshot.value != null) {
+      List<dynamic> sad = event.snapshot.value as List<dynamic>;
+
+      projectList.value = projectListFromJson(sad);
+      //print(taskList);
+    }
+  }
+
+  Future<void> noteListUpload(String uid) async {
+    for (var i = 0; i < noteList.length; i++) {
+      db.saveNote(noteList[i], i, uid);
+    }
+  }
+
+  Future<void> taskListUpload(String uid) async {
+    for (var i = 0; i < taskList.length; i++) {
+      db.saveTask(taskList[i], i, uid);
+    }
+  }
+
+  Future<void> projectListUpload(String uid) async {
+    for (var i = 0; i < projectList.length; i++) {
+      db.saveProject(projectList[i], i, uid);
+    }
   }
 
   Future<void> addColors() async {
@@ -130,18 +188,18 @@ class LoadDataController extends GetxController {
     }
   }
 
-  Future<void> getProjects() async {
-    projectList.add(Project(
-        projectName: "Course Project", projectAvatar: 4, projectColor: 3));
-    projectList.add(
-        Project(projectName: "Assignments", projectAvatar: 3, projectColor: 2));
-    projectList.add(Project(
-        projectName: "CV and Job hunt", projectAvatar: 2, projectColor: 1));
-    projectList.add(Project(
-        projectName: "Evening Schedule", projectAvatar: 5, projectColor: 4));
-    projectList.add(Project(
-        projectName: "Shopping List", projectAvatar: 1, projectColor: 6));
-  }
+  // Future<void> getProjects() async {
+  //   projectList.add(Project(
+  //       projectName: "Course Project", projectAvatar: 4, projectColor: 3));
+  //   projectList.add(
+  //       Project(projectName: "Assignments", projectAvatar: 3, projectColor: 2));
+  //   projectList.add(Project(
+  //       projectName: "CV and Job hunt", projectAvatar: 2, projectColor: 1));
+  //   projectList.add(Project(
+  //       projectName: "Evening Schedule", projectAvatar: 5, projectColor: 4));
+  //   projectList.add(Project(
+  //       projectName: "Shopping List", projectAvatar: 1, projectColor: 6));
+  // }
 
   @override
   void onReady() {

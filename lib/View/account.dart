@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,11 +6,13 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:project_tasker/Components/bottom_navigation.dart';
+import 'package:project_tasker/Controller/load_data_controller.dart';
 import 'package:project_tasker/Helper/values.dart';
 import 'package:project_tasker/View/Bottomsheets/about_us_sheet.dart';
 import 'package:project_tasker/View/Bottomsheets/privacy_policy_sheet.dart';
 import 'package:project_tasker/View/Bottomsheets/select_avatar_sheet.dart';
 import 'package:project_tasker/View/Bottomsheets/select_theme_sheet.dart';
+import 'package:project_tasker/View/login.dart';
 
 class Account extends StatefulWidget {
   @override
@@ -19,6 +22,7 @@ class Account extends StatefulWidget {
 class _AccountState extends State {
   late double height;
   late double width;
+  LoadDataController _loadDataController = Get.find();
   @override
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
@@ -118,14 +122,14 @@ class _AccountState extends State {
                     width: width * 0.13,
                   ),
                   title: Text(
-                    "Mary Allen",
+                    _loadDataController.currentUserName.value,
                     style: GoogleFonts.poppins(
                         fontSize: height * 0.022,
                         color: textColor,
                         fontWeight: FontWeight.w500),
                   ),
                   subtitle: Text(
-                    "maryallen@gmail.com",
+                    _loadDataController.currentUserEmail.value,
                     style: GoogleFonts.poppins(
                         fontSize: height * 0.018,
                         color: textLight,
@@ -302,6 +306,40 @@ class _AccountState extends State {
                   // ),
                   title: Text(
                     "Privacy policy",
+                    style: GoogleFonts.poppins(
+                        fontSize: height * 0.022,
+                        color: textColor,
+                        fontWeight: FontWeight.w400),
+                  ),
+                  trailing: Container(
+                    height: height * 0.05,
+                    width: width * 0.1,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(width * 0.03),
+                        color: grey),
+                    child: Icon(
+                      CupertinoIcons.forward,
+                      color: textColor,
+                      size: width * 0.045,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: height * 0.015,
+                ),
+                ListTile(
+                  onTap: () async {
+                    await FirebaseAuth.instance.signOut();
+                    Get.offAll(Login());
+                  },
+                  contentPadding: EdgeInsets.all(0),
+                  // leading: SvgPicture.asset(
+                  //   'assets/icons/logout.svg',
+                  //   height: width * 0.13,
+                  //   width: width * 0.13,
+                  // ),
+                  title: Text(
+                    "Log out",
                     style: GoogleFonts.poppins(
                         fontSize: height * 0.022,
                         color: textColor,

@@ -6,13 +6,19 @@ import 'package:get/get.dart';
 import 'package:project_tasker/Controller/load_data_controller.dart';
 import 'package:project_tasker/Helper/values.dart';
 import 'package:project_tasker/View/home_screen.dart';
+import 'package:project_tasker/View/login.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
-  //Get.put(LoadDataController());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(GetMaterialApp(
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
-      primarySwatch: Colors.blue,
+      primarySwatch: Colors.purple,
     ),
     home: const MyHomePage(title: 'Flutter Demo Home Page'),
   ));
@@ -32,22 +38,21 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late double height;
   late double width;
-  LoadDataController _loadDataController = Get.put(LoadDataController());
+  //LoadDataController _loadDataController = Get.put(LoadDataController());
 
   @override
   void initState() {
     super.initState();
+    //initializeFirebase();
     loadData();
-
-    getData();
   }
 
-  void getData() async {
-    _loadDataController.getNotes();
-    _loadDataController.getProjects();
-    _loadDataController.addColors();
-    _loadDataController.addThemes();
-  }
+  // void initializeFirebase() async {
+  //   WidgetsFlutterBinding.ensureInitialized();
+  //   await Firebase.initializeApp(
+  //     options: DefaultFirebaseOptions.currentPlatform,
+  //   );
+  // }
 
   //LoadDataController _loadDataController = Get.find();
 
@@ -61,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Future.delayed(Duration(milliseconds: 3500)).then((value) async {
       //await LoadDataController.instance.getClassList();
 
-      Get.offAll(() => HomeScreen());
+      Get.offAll(() => Login());
     });
   }
 
@@ -77,9 +82,9 @@ class _MyHomePageState extends State<MyHomePage> {
         color: Colors.white,
         child: Center(
           child: Container(
-              height: height * 0.2,
+              height: height * 0.4,
               width: width * 0.7,
-              child: SvgPicture.asset("assets/icons/logo.svg")),
+              child: Image.asset("assets/icons/appIcon.png")),
         ),
       ),
       floatingActionButton: Container(

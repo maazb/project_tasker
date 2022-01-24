@@ -102,22 +102,15 @@ class _OpenProjectState extends State {
                   () => Container(
                       margin: EdgeInsets.symmetric(horizontal: width * 0.055),
                       //height: height * 0.2,
-                      child: _loadDataController
-                              .projectList[
-                                  _loadDataController.selectedProject.value]
-                              .tasks
-                              .isEmpty
+                      child: _loadDataController.taskList.isEmpty
                           ? Container()
                           : Obx(
                               () => ListView.builder(
                                   scrollDirection: Axis.vertical,
                                   shrinkWrap: true,
                                   physics: NeverScrollableScrollPhysics(),
-                                  itemCount: _loadDataController
-                                      .projectList[_loadDataController
-                                          .selectedProject.value]
-                                      .tasks
-                                      .length,
+                                  itemCount:
+                                      _loadDataController.taskList.length,
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     return Column(
@@ -129,16 +122,15 @@ class _OpenProjectState extends State {
                                             : Container(),
                                         GestureDetector(
                                           onPanUpdate: (details) {
-                                            _loadDataController
-                                                .projectList[_loadDataController
-                                                    .selectedProject.value]
-                                                .tasks
-                                                .remove(_loadDataController
-                                                    .projectList[
-                                                        _loadDataController
-                                                            .selectedProject
-                                                            .value]
-                                                    .tasks[index]);
+                                            // _loadDataController
+
+                                            //     .taskList
+                                            //     .remove(_loadDataController
+                                            //         .projectList[
+                                            //             _loadDataController
+                                            //                 .selectedProject
+                                            //                 .value]
+                                            //         .taskList[index]);
                                           },
                                           child: Container(
                                             height: height * 0.1,
@@ -166,12 +158,15 @@ class _OpenProjectState extends State {
                                                   children: [
                                                     Expanded(
                                                       child: Text(
+                                                        // _loadDataController
+                                                        //     .projectList[
+                                                        //         _loadDataController
+                                                        //             .selectedProject
+                                                        //             .value]
+                                                        //     .taskList[index]
+                                                        //     .taskName!,
                                                         _loadDataController
-                                                            .projectList[
-                                                                _loadDataController
-                                                                    .selectedProject
-                                                                    .value]
-                                                            .tasks[index]
+                                                            .taskList[index]
                                                             .taskName!,
                                                         style:
                                                             GoogleFonts.poppins(

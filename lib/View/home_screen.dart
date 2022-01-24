@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:project_tasker/Components/bottom_navigation.dart';
+import 'package:project_tasker/Controller/database.dart';
 import 'package:project_tasker/Controller/load_data_controller.dart';
 import 'package:project_tasker/Helper/values.dart';
 import 'package:project_tasker/View/Bottomsheets/edit_note_sheet.dart';
@@ -14,20 +15,31 @@ import 'package:project_tasker/View/Bottomsheets/edit_note_sheet.dart';
 import 'package:project_tasker/View/notifications.dart';
 
 class HomeScreen extends StatefulWidget {
+  String? userId;
+  String? userEmail;
+  String? userName;
+
+  HomeScreen({Key? key, this.userId, this.userName, this.userEmail})
+      : super(key: key);
+
   @override
-  State<StatefulWidget> createState() => _HomeScreenState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State {
+class _HomeScreenState extends State<HomeScreen> {
   late double height;
   late double width;
-  LoadDataController _loadDataController = Get.find();
+  LoadDataController _loadDataController = Get.put(LoadDataController());
+  Database _database = Database();
+  RxBool todoShow = false.obs;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getToDo();
+
+    getData();
+    //getToDo();
   }
 
   @override
@@ -36,8 +48,26 @@ class _HomeScreenState extends State {
     super.dispose();
   }
 
+  void getData() async {
+    _loadDataController.currentUserId.value = widget.userId!;
+    _loadDataController.currentUserName.value = widget.userName!;
+    _loadDataController.currentUserEmail.value = widget.userEmail!;
+    await _loadDataController.getNotes(_loadDataController.currentUserId.value);
+    await _loadDataController
+        .getProjects(_loadDataController.currentUserId.value);
+    await _loadDataController
+        .getTasks(_loadDataController.currentUserId.value)
+        .then((value) => getToDo());
+    //_loadDataController.getTodayTasks();
+
+    _loadDataController.addColors();
+    _loadDataController.addThemes();
+  }
+
   void getToDo() async {
-    await _loadDataController.getTodayTasks();
+    await _loadDataController.getTodayTotalTasks();
+    await _loadDataController.getTodayCompletedTasks();
+    setState(() {});
   }
 
   @override
@@ -66,12 +96,14 @@ class _HomeScreenState extends State {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                child: Text(
-                  "Hello, Mary",
-                  style: GoogleFonts.poppins(
-                      color: textColor,
-                      fontWeight: FontWeight.w600,
-                      fontSize: height * 0.033),
+                child: Expanded(
+                  child: Text(
+                    "Hello, " + _loadDataController.currentUserName.value,
+                    style: GoogleFonts.poppins(
+                        color: textColor,
+                        fontWeight: FontWeight.w600,
+                        fontSize: height * 0.025),
+                  ),
                 ),
               ),
               CupertinoButton(
@@ -140,7 +172,7 @@ class _HomeScreenState extends State {
                                 _loadDataController.completedTodayTasks.value
                                         .toString() +
                                     "/" +
-                                    _loadDataController.todayTaskList.length
+                                    _loadDataController.todayTasks.value
                                         .toString() +
                                     " tasks",
                                 style: GoogleFonts.poppins(
@@ -272,11 +304,26 @@ class _HomeScreenState extends State {
                                                       ),
                                                       child: CupertinoButton(
                                                         onPressed: () {
+                                                          // _database.deleteNote(
+                                                          //     index,
+                                                          //     _loadDataController
+                                                          //         .currentUserId
+                                                          //         .value);
                                                           _loadDataController
                                                               .noteList
                                                               .remove(_loadDataController
                                                                       .noteList[
                                                                   index]);
+
+                                                          _database.deleteNoteList(
+                                                              _loadDataController
+                                                                  .currentUserId
+                                                                  .value);
+                                                          _loadDataController
+                                                              .noteListUpload(
+                                                                  _loadDataController
+                                                                      .currentUserId
+                                                                      .value);
                                                         },
                                                         padding:
                                                             EdgeInsets.all(0),
@@ -334,142 +381,185 @@ class _HomeScreenState extends State {
                               scrollDirection: Axis.vertical,
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
-                              itemCount:
-                                  _loadDataController.todayTaskList.length,
+                              itemCount: _loadDataController.taskList.length,
                               itemBuilder: (BuildContext context, int index) {
-                                return Column(
-                                  children: [
-                                    index == 0
-                                        ? SizedBox(
-                                            height: height * 0.018,
-                                          )
-                                        : Container(),
-                                    CupertinoButton(
-                                      onPressed: () {
-                                        if (_loadDataController
-                                                .todayTaskList[index]
-                                                .completed ==
-                                            false) {
-                                          _loadDataController
-                                              .todayTaskList[index]
-                                              .completed = true;
-                                        } else {
-                                          _loadDataController
-                                              .todayTaskList[index]
-                                              .completed = false;
-                                        }
-
-                                        setState(() {});
-                                        _loadDataController
-                                            .getTodayCompletedTasks();
-                                      },
-                                      padding: EdgeInsets.all(0),
-                                      minSize: width * 0.001,
-                                      child: Container(
-                                        height: height * 0.1,
-                                        width: width,
-                                        decoration: BoxDecoration(
-                                            color: white,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                  offset: Offset(0, 4),
-                                                  color: grey2,
-                                                  blurRadius: 15)
-                                            ],
-                                            borderRadius: BorderRadius.circular(
-                                                width * 0.06)),
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: height * 0.02,
-                                              horizontal: width * 0.04),
-                                          child: Center(
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Expanded(
-                                                  child: Text(
+                                return _loadDataController
+                                            .taskList[index].date!.day !=
+                                        DateTime.now().day
+                                    ? Container()
+                                    : Column(
+                                        children: [
+                                          index == 0
+                                              ? SizedBox(
+                                                  height: height * 0.018,
+                                                )
+                                              : Container(),
+                                          CupertinoButton(
+                                            onPressed: () {
+                                              if (_loadDataController
+                                                      .taskList[index]
+                                                      .completed ==
+                                                  false) {
+                                                _loadDataController
+                                                    .taskList[index]
+                                                    .completed = true;
+                                                _database.deleteTaskList(
                                                     _loadDataController
-                                                        .todayTaskList[index]
-                                                        .taskName!,
-                                                    style: GoogleFonts.poppins(
-                                                        color: textColor,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        fontSize:
-                                                            height * 0.020),
+                                                        .currentUserId.value);
+
+                                                _loadDataController
+                                                    .taskListUpload(
+                                                        _loadDataController
+                                                            .currentUserId
+                                                            .value);
+
+                                                _loadDataController
+                                                    .getTodayTotalTasks();
+
+                                                _loadDataController
+                                                    .getTodayCompletedTasks();
+                                              } else {
+                                                _loadDataController
+                                                    .taskList[index]
+                                                    .completed = false;
+
+                                                _database.deleteTaskList(
+                                                    _loadDataController
+                                                        .currentUserId.value);
+
+                                                _loadDataController
+                                                    .taskListUpload(
+                                                        _loadDataController
+                                                            .currentUserId
+                                                            .value);
+
+                                                _loadDataController
+                                                    .getTodayTotalTasks();
+
+                                                _loadDataController
+                                                    .getTodayCompletedTasks();
+                                              }
+
+                                              setState(() {});
+                                              _loadDataController
+                                                  .getTodayCompletedTasks();
+                                            },
+                                            padding: EdgeInsets.all(0),
+                                            minSize: width * 0.001,
+                                            child: Container(
+                                              height: height * 0.1,
+                                              width: width,
+                                              decoration: BoxDecoration(
+                                                  color: white,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                        offset: Offset(0, 4),
+                                                        color: grey2,
+                                                        blurRadius: 15)
+                                                  ],
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          width * 0.06)),
+                                              child: Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: height * 0.02,
+                                                    horizontal: width * 0.04),
+                                                child: Center(
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Expanded(
+                                                        child: Text(
+                                                          _loadDataController
+                                                              .taskList[index]
+                                                              .taskName!,
+                                                          style: GoogleFonts
+                                                              .poppins(
+                                                                  color:
+                                                                      textColor,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400,
+                                                                  fontSize:
+                                                                      height *
+                                                                          0.020),
+                                                        ),
+                                                      ),
+                                                      Obx(
+                                                        () => Container(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  right: width *
+                                                                      0.02,
+                                                                  left: width *
+                                                                      0.04),
+                                                          child: Center(
+                                                            child: _loadDataController
+                                                                        .taskList[
+                                                                            index]
+                                                                        .completed ==
+                                                                    true
+                                                                ? Container(
+                                                                    height:
+                                                                        width *
+                                                                            0.05,
+                                                                    width: width *
+                                                                        0.05,
+                                                                    decoration: BoxDecoration(
+                                                                        color:
+                                                                            primaryColor,
+                                                                        border: Border.all(
+                                                                            color:
+                                                                                primaryColor,
+                                                                            style: BorderStyle
+                                                                                .solid,
+                                                                            width: width *
+                                                                                0.0025),
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(width * 0.015)),
+                                                                    child: Icon(
+                                                                      CupertinoIcons
+                                                                          .check_mark,
+                                                                      color:
+                                                                          white,
+                                                                      size: width *
+                                                                          0.03,
+                                                                    ))
+                                                                : Container(
+                                                                    height:
+                                                                        width *
+                                                                            0.05,
+                                                                    width:
+                                                                        width *
+                                                                            0.05,
+                                                                    decoration: BoxDecoration(
+                                                                        border: Border.all(
+                                                                            color:
+                                                                                textColor,
+                                                                            style: BorderStyle
+                                                                                .solid,
+                                                                            width: width *
+                                                                                0.0025),
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(width *
+                                                                                0.015)),
+                                                                  ),
+                                                          ),
+                                                        ),
+                                                      )
+                                                    ],
                                                   ),
                                                 ),
-                                                Obx(
-                                                  () => Container(
-                                                    padding: EdgeInsets.only(
-                                                        right: width * 0.02,
-                                                        left: width * 0.04),
-                                                    child: Center(
-                                                      child: _loadDataController
-                                                                  .todayTaskList[
-                                                                      index]
-                                                                  .completed ==
-                                                              true
-                                                          ? Container(
-                                                              height:
-                                                                  width * 0.05,
-                                                              width:
-                                                                  width * 0.05,
-                                                              decoration: BoxDecoration(
-                                                                  color:
-                                                                      primaryColor,
-                                                                  border: Border.all(
-                                                                      color:
-                                                                          primaryColor,
-                                                                      style: BorderStyle
-                                                                          .solid,
-                                                                      width: width *
-                                                                          0.0025),
-                                                                  borderRadius:
-                                                                      BorderRadius.circular(
-                                                                          width *
-                                                                              0.015)),
-                                                              child: Icon(
-                                                                CupertinoIcons
-                                                                    .check_mark,
-                                                                color: white,
-                                                                size: width *
-                                                                    0.03,
-                                                              ))
-                                                          : Container(
-                                                              height:
-                                                                  width * 0.05,
-                                                              width:
-                                                                  width * 0.05,
-                                                              decoration: BoxDecoration(
-                                                                  border: Border.all(
-                                                                      color:
-                                                                          textColor,
-                                                                      style: BorderStyle
-                                                                          .solid,
-                                                                      width: width *
-                                                                          0.0025),
-                                                                  borderRadius:
-                                                                      BorderRadius.circular(
-                                                                          width *
-                                                                              0.015)),
-                                                            ),
-                                                    ),
-                                                  ),
-                                                )
-                                              ],
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: height * 0.02,
-                                    )
-                                  ],
-                                );
+                                          SizedBox(
+                                            height: height * 0.02,
+                                          )
+                                        ],
+                                      );
                               }),
                         )),
                     SizedBox(
