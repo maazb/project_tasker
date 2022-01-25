@@ -17,6 +17,9 @@ class LoadDataController extends GetxController {
   RxList<Task> todayTaskList = RxList<Task>();
   RxInt completedTodayTasks = 0.obs;
   RxInt todayTasks = 0.obs;
+  RxBool loading = true.obs;
+  DateTime focusedCalendarDay = DateTime.now();
+  DateTime selectedCalendarDay = DateTime.now();
 
   RxString currentUserId = "".obs;
   RxString currentUserName = "".obs;

@@ -39,7 +39,7 @@ class Task {
 
   factory Task.fromJson(Map<dynamic, dynamic> json) => Task(
       taskId: json["taskId"],
-      projectId: json["projectName"],
+      projectId: json["projectId"],
       taskName: json["taskName"],
       date: DateTime.parse(json["date"] as String),
       completed: json["completed"] as String == "true" ? true : false);

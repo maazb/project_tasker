@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:project_tasker/Components/bottom_navigation.dart';
+import 'package:project_tasker/Controller/database.dart';
+import 'package:project_tasker/Controller/load_data_controller.dart';
 import 'package:project_tasker/Helper/values.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -16,6 +19,8 @@ class _CalendarState extends State {
   late double width;
   DateTime? _focusedDay;
   DateTime? _selectedDay;
+  LoadDataController _loadDataController = Get.find();
+  Database _database = Database();
 
   @override
   void initState() {
@@ -229,12 +234,14 @@ class _CalendarState extends State {
                             ),
                           ),
                           selectedDayPredicate: (day) {
-                            return isSameDay(_selectedDay, day);
+                            return isSameDay(
+                                _loadDataController.selectedCalendarDay, day);
                           },
                           onDaySelected: (selectedDay, focusedDay) {
                             setState(() {
-                              _selectedDay = selectedDay;
-                              _focusedDay =
+                              _loadDataController.selectedCalendarDay =
+                                  selectedDay;
+                              _loadDataController.focusedCalendarDay =
                                   focusedDay; // update `_focusedDay` here as well
                             });
                           },
@@ -244,83 +251,275 @@ class _CalendarState extends State {
                   ],
                 ),
               ),
+              SizedBox(
+                height: height * 0.018,
+              ),
               Container(
                   margin: EdgeInsets.symmetric(horizontal: width * 0.055),
                   //height: height * 0.2,
-                  child: ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: 7,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Column(
-                          children: [
-                            index == 0
-                                ? SizedBox(
-                                    height: height * 0.018,
-                                  )
-                                : Container(),
-                            Container(
-                              height: height * 0.1,
-                              width: width,
-                              decoration: BoxDecoration(
-                                  color: white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                        offset: Offset(0, 4),
-                                        color: grey2,
-                                        blurRadius: 15)
-                                  ],
-                                  borderRadius:
-                                      BorderRadius.circular(width * 0.06)),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: height * 0.02,
-                                    horizontal: width * 0.04),
-                                child: Center(
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          "Do submit Assignment 2 of maths before 10 AM.",
-                                          style: GoogleFonts.poppins(
-                                              color: textColor,
-                                              fontWeight: FontWeight.w400,
-                                              fontSize: height * 0.020),
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.only(
-                                            right: width * 0.02,
-                                            left: width * 0.04),
-                                        child: Center(
+                  child: Obx(
+                    () => ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: _loadDataController.taskList.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return _loadDataController
+                                      .taskList[index].date!.day !=
+                                  _loadDataController.selectedCalendarDay.day
+                              ? Container()
+                              : Column(
+                                  children: [
+                                    // index == 0
+                                    //     ? SizedBox(
+                                    //         height: height * 0.018,
+                                    //       )
+                                    //:
+                                    Container(),
+                                    GestureDetector(
+                                      onHorizontalDragEnd: (details) {
+                                        _loadDataController.taskList.remove(
+                                            _loadDataController
+                                                .taskList[index]);
+
+                                        _database.deleteTaskList(
+                                            _loadDataController
+                                                .currentUserId.value);
+                                        _loadDataController.taskListUpload(
+                                            _loadDataController
+                                                .currentUserId.value);
+                                      },
+                                      child: CupertinoButton(
+                                        onPressed: () {
+                                          if (_loadDataController
+                                                  .taskList[index].completed ==
+                                              false) {
+                                            _loadDataController.taskList[index]
+                                                .completed = true;
+                                            _database.deleteTaskList(
+                                                _loadDataController
+                                                    .currentUserId.value);
+
+                                            _loadDataController.taskListUpload(
+                                                _loadDataController
+                                                    .currentUserId.value);
+
+                                            _loadDataController
+                                                .getTodayTotalTasks();
+
+                                            _loadDataController
+                                                .getTodayCompletedTasks();
+                                          } else {
+                                            _loadDataController.taskList[index]
+                                                .completed = false;
+
+                                            _database.deleteTaskList(
+                                                _loadDataController
+                                                    .currentUserId.value);
+
+                                            _loadDataController.taskListUpload(
+                                                _loadDataController
+                                                    .currentUserId.value);
+
+                                            _loadDataController
+                                                .getTodayTotalTasks();
+
+                                            _loadDataController
+                                                .getTodayCompletedTasks();
+                                          }
+
+                                          setState(() {});
+                                          _loadDataController
+                                              .getTodayCompletedTasks();
+                                        },
+                                        padding: EdgeInsets.all(0),
+                                        minSize: width * 0.001,
+                                        child: Container(
+                                          height: height * 0.1,
+                                          width: width,
+                                          decoration: BoxDecoration(
+                                              color: white,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                    offset: Offset(0, 4),
+                                                    color: grey2,
+                                                    blurRadius: 15)
+                                              ],
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                      width * 0.06)),
                                           child: Container(
-                                            height: width * 0.05,
-                                            width: width * 0.05,
-                                            decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: textColor,
-                                                    style: BorderStyle.solid,
-                                                    width: width * 0.0025),
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        width * 0.015)),
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: height * 0.02,
+                                                horizontal: width * 0.04),
+                                            child: Center(
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Expanded(
+                                                    child: Text(
+                                                      _loadDataController
+                                                          .taskList[index]
+                                                          .taskName!,
+                                                      style:
+                                                          GoogleFonts.poppins(
+                                                              color: textColor,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400,
+                                                              fontSize: height *
+                                                                  0.020),
+                                                    ),
+                                                  ),
+                                                  Obx(
+                                                    () => Container(
+                                                      padding: EdgeInsets.only(
+                                                          right: width * 0.02,
+                                                          left: width * 0.04),
+                                                      child: Center(
+                                                        child: _loadDataController
+                                                                    .taskList[
+                                                                        index]
+                                                                    .completed ==
+                                                                true
+                                                            ? Container(
+                                                                height: width *
+                                                                    0.05,
+                                                                width: width *
+                                                                    0.05,
+                                                                decoration: BoxDecoration(
+                                                                    color:
+                                                                        primaryColor,
+                                                                    border: Border.all(
+                                                                        color:
+                                                                            primaryColor,
+                                                                        style: BorderStyle
+                                                                            .solid,
+                                                                        width: width *
+                                                                            0.0025),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(width *
+                                                                            0.015)),
+                                                                child: Icon(
+                                                                  CupertinoIcons
+                                                                      .check_mark,
+                                                                  color: white,
+                                                                  size: width *
+                                                                      0.03,
+                                                                ))
+                                                            : Container(
+                                                                height: width *
+                                                                    0.05,
+                                                                width: width *
+                                                                    0.05,
+                                                                decoration: BoxDecoration(
+                                                                    border: Border.all(
+                                                                        color:
+                                                                            textColor,
+                                                                        style: BorderStyle
+                                                                            .solid,
+                                                                        width: width *
+                                                                            0.0025),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(width *
+                                                                            0.015)),
+                                                              ),
+                                                      ),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              height: height * 0.02,
-                            )
-                          ],
-                        );
-                      })),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: height * 0.02,
+                                    )
+                                  ],
+                                );
+                        }),
+                  )),
+              // Container(
+              //     margin: EdgeInsets.symmetric(horizontal: width * 0.055),
+              //     //height: height * 0.2,
+              //     child: ListView.builder(
+              //         scrollDirection: Axis.vertical,
+              //         shrinkWrap: true,
+              //         physics: NeverScrollableScrollPhysics(),
+              //         itemCount: 7,
+              //         itemBuilder: (BuildContext context, int index) {
+              //           return Column(
+              //             children: [
+              //               index == 0
+              //                   ? SizedBox(
+              //                       height: height * 0.018,
+              //                     )
+              //                   : Container(),
+              //               Container(
+              //                 height: height * 0.1,
+              //                 width: width,
+              //                 decoration: BoxDecoration(
+              //                     color: white,
+              //                     boxShadow: [
+              //                       BoxShadow(
+              //                           offset: Offset(0, 4),
+              //                           color: grey2,
+              //                           blurRadius: 15)
+              //                     ],
+              //                     borderRadius:
+              //                         BorderRadius.circular(width * 0.06)),
+              //                 child: Container(
+              //                   padding: EdgeInsets.symmetric(
+              //                       vertical: height * 0.02,
+              //                       horizontal: width * 0.04),
+              //                   child: Center(
+              //                     child: Row(
+              //                       mainAxisAlignment:
+              //                           MainAxisAlignment.spaceBetween,
+              //                       children: [
+              //                         Expanded(
+              //                           child: Text(
+              //                             "Do submit Assignment 2 of maths before 10 AM.",
+              //                             style: GoogleFonts.poppins(
+              //                                 color: textColor,
+              //                                 fontWeight: FontWeight.w400,
+              //                                 fontSize: height * 0.020),
+              //                           ),
+              //                         ),
+              //                         Container(
+              //                           padding: EdgeInsets.only(
+              //                               right: width * 0.02,
+              //                               left: width * 0.04),
+              //                           child: Center(
+              //                             child: Container(
+              //                               height: width * 0.05,
+              //                               width: width * 0.05,
+              //                               decoration: BoxDecoration(
+              //                                   border: Border.all(
+              //                                       color: textColor,
+              //                                       style: BorderStyle.solid,
+              //                                       width: width * 0.0025),
+              //                                   borderRadius:
+              //                                       BorderRadius.circular(
+              //                                           width * 0.015)),
+              //                             ),
+              //                           ),
+              //                         )
+              //                       ],
+              //                     ),
+              //                   ),
+              //                 ),
+              //               ),
+              //               SizedBox(
+              //                 height: height * 0.02,
+              //               )
+              //             ],
+              //           );
+              //         })),
               SizedBox(
                 height: height * 0.15,
               )

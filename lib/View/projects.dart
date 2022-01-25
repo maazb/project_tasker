@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:project_tasker/Components/bottom_navigation.dart';
+import 'package:project_tasker/Controller/database.dart';
 import 'package:project_tasker/Controller/load_data_controller.dart';
 import 'package:project_tasker/Helper/values.dart';
 import 'package:project_tasker/View/open_project.dart';
@@ -18,6 +19,7 @@ class _ProjectsState extends State {
   late double width;
   RxBool isSearchOpen = false.obs;
   LoadDataController _loadDataController = Get.find();
+  Database _database = Database();
 
   @override
   Widget build(BuildContext context) {
@@ -128,103 +130,178 @@ class _ProjectsState extends State {
                                       height: height * 0.018,
                                     )
                                   : Container(),
-                              CupertinoButton(
-                                onPressed: () {
-                                  _loadDataController.selectedProject.value =
-                                      index;
-                                  Get.to(() => OpenProject());
+                              GestureDetector(
+                                onHorizontalDragEnd: (details) {
+                                  _loadDataController.projectList.remove(
+                                      _loadDataController.projectList[index]);
+
+                                  for (var i = 0;
+                                      i < _loadDataController.taskList.length;
+                                      i++) {
+                                    if (_loadDataController
+                                            .taskList[i].projectId! ==
+                                        index) {
+                                      _loadDataController.taskList.remove(
+                                          _loadDataController.taskList[i]);
+                                    }
+                                  }
+
+                                  for (var i = 0;
+                                      i < _loadDataController.taskList.length;
+                                      i++) {
+                                    if (_loadDataController
+                                            .taskList[i].projectId! >
+                                        index) {
+                                      _loadDataController.taskList[i]
+                                          .projectId = _loadDataController
+                                              .taskList[i].projectId! -
+                                          1;
+                                    }
+                                  }
+
+                                  _database.deleteProjectList(
+                                      _loadDataController.currentUserId.value);
+                                  _loadDataController.projectListUpload(
+                                      _loadDataController.currentUserId.value);
+
+                                  _database.deleteTaskList(
+                                      _loadDataController.currentUserId.value);
+                                  _loadDataController.taskListUpload(
+                                      _loadDataController.currentUserId.value);
                                 },
-                                padding: EdgeInsets.all(0),
-                                child: Container(
-                                  // margin: EdgeInsets.symmetric(
-                                  //     horizontal: width * 0.055,
-                                  //     vertical: height * 0.02),
-                                  height: height * 0.18,
-                                  width: width,
-                                  decoration: BoxDecoration(
-                                      color: _loadDataController.getColor(
-                                          _loadDataController.projectList
-                                              .value[index].projectColor!),
-                                      borderRadius:
-                                          BorderRadius.circular(width * 0.06)),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: Container(
-                                          margin: EdgeInsets.only(
-                                              right: width * 0.02,
-                                              left: width * 0.04,
-                                              bottom: height * 0.04,
-                                              top: height * 0.03),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            // mainAxisAlignment:
-                                            //     MainAxisAlignment.spaceAround,
-                                            children: [
-                                              Container(
-                                                child: Row(
+                                child: Stack(
+                                  children: [
+                                    CupertinoButton(
+                                      onPressed: () {
+                                        _loadDataController
+                                            .selectedProject.value = index;
+                                        Get.to(() => OpenProject(
+                                              projectId: index,
+                                            ));
+                                      },
+                                      padding: EdgeInsets.all(0),
+                                      child: Container(
+                                        // margin: EdgeInsets.symmetric(
+                                        //     horizontal: width * 0.055,
+                                        //     vertical: height * 0.02),
+                                        height: height * 0.18,
+                                        width: width,
+                                        decoration: BoxDecoration(
+                                            color: _loadDataController.getColor(
+                                                _loadDataController
+                                                    .projectList
+                                                    .value[index]
+                                                    .projectColor!),
+                                            borderRadius: BorderRadius.circular(
+                                                width * 0.06)),
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: Container(
+                                                margin: EdgeInsets.only(
+                                                    right: width * 0.02,
+                                                    left: width * 0.04,
+                                                    bottom: height * 0.04,
+                                                    top: height * 0.03),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  // mainAxisAlignment:
+                                                  //     MainAxisAlignment.spaceAround,
                                                   children: [
-                                                    Text(
-                                                      "4/10 tasks - ",
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                              color: textColor,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w300,
-                                                              fontSize: height *
-                                                                  0.018),
+                                                    Container(
+                                                      child: Row(
+                                                        children: [
+                                                          Text(
+                                                            "4/10 tasks - ",
+                                                            style: GoogleFonts.poppins(
+                                                                color:
+                                                                    textColor,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w300,
+                                                                fontSize:
+                                                                    height *
+                                                                        0.018),
+                                                          ),
+                                                          Text(
+                                                            "40%",
+                                                            style: GoogleFonts.poppins(
+                                                                color:
+                                                                    textColor,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w300,
+                                                                fontSize:
+                                                                    height *
+                                                                        0.018),
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
-                                                    Text(
-                                                      "40%",
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                              color: textColor,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w300,
-                                                              fontSize: height *
-                                                                  0.018),
-                                                    ),
+                                                    Container(
+                                                      child: Flexible(
+                                                        child: Text(
+                                                          _loadDataController
+                                                              .projectList[
+                                                                  index]
+                                                              .projectName!,
+                                                          style: GoogleFonts
+                                                              .poppins(
+                                                                  color:
+                                                                      textColor,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  fontSize:
+                                                                      height *
+                                                                          0.025),
+                                                        ),
+                                                      ),
+                                                    )
                                                   ],
                                                 ),
                                               ),
-                                              Container(
-                                                child: Flexible(
-                                                  child: Text(
+                                            ),
+                                            Container(
+                                              height: width * 0.35,
+                                              width: width * 0.35,
+                                              padding:
+                                                  EdgeInsets.all(width * 0.0),
+                                              margin: EdgeInsets.only(
+                                                  top: height * 0.02,
+                                                  right: width * 0.04),
+                                              child: Image.asset(
+                                                _loadDataController.getAvatar(
                                                     _loadDataController
                                                         .projectList[index]
-                                                        .projectName!,
-                                                    style: GoogleFonts.poppins(
-                                                        color: textColor,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        fontSize:
-                                                            height * 0.025),
-                                                  ),
-                                                ),
-                                              )
-                                            ],
-                                          ),
+                                                        .projectAvatar!),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                      Container(
-                                        height: width * 0.35,
-                                        width: width * 0.35,
-                                        padding: EdgeInsets.all(width * 0.0),
-                                        margin: EdgeInsets.only(
-                                            top: height * 0.02,
-                                            right: width * 0.04),
-                                        child: Image.asset(
-                                          _loadDataController.getAvatar(
-                                              _loadDataController
-                                                  .projectList[index]
-                                                  .projectAvatar!),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                    // Positioned(
+                                    //     right: width * 0.02,
+                                    //     top: height * 0.01,
+                                    //     child: Container(
+                                    //       decoration: BoxDecoration(
+                                    //           color: ferrariRed,
+                                    //           borderRadius:
+                                    //               BorderRadius.circular(
+                                    //                   width * 2)),
+                                    //       child: Container(
+                                    //         margin:
+                                    //             EdgeInsets.all(width * 0.01),
+                                    //         child: Icon(
+                                    //           CupertinoIcons.multiply,
+                                    //           size: width * 0.04,
+                                    //           color: white,
+                                    //         ),
+                                    //       ),
+                                    //     ))
+                                  ],
                                 ),
                               ),
                               SizedBox(
