@@ -286,34 +286,48 @@ class _AddTaskSheetState extends State {
                         CupertinoButton(
                           padding: EdgeInsets.all(0),
                           onPressed: () async {
-                            try {
-                              print('checking internet');
+                            if (_textEditingController.text.isEmpty == false) {
+                              try {
+                                print('checking internet');
 
-                              final result =
-                                  await InternetAddress.lookup("example.com");
-                              print('checked internet');
-                              if (result.isNotEmpty &&
-                                  result[0].rawAddress.isNotEmpty) {
-                                _loadDataController.taskList.add(Task(
-                                    date: selectedDate,
-                                    taskId: _loadDataController.taskList.length,
-                                    taskName: _textEditingController.text,
-                                    projectId: _loadDataController
-                                        .selectedProjectAddTask.value,
-                                    completed: false));
+                                final result =
+                                    await InternetAddress.lookup("example.com");
+                                print('checked internet');
+                                if (result.isNotEmpty &&
+                                    result[0].rawAddress.isNotEmpty) {
+                                  _loadDataController.taskList.add(Task(
+                                      date: selectedDate,
+                                      taskId:
+                                          _loadDataController.taskList.length,
+                                      taskName: _textEditingController.text,
+                                      projectId: _loadDataController
+                                          .selectedProjectAddTask.value,
+                                      completed: false));
 
-                                _database.deleteTaskList(
-                                    _loadDataController.currentUserId.value);
+                                  _database.deleteTaskList(
+                                      _loadDataController.currentUserId.value);
 
-                                _loadDataController.taskListUpload(
-                                    _loadDataController.currentUserId.value);
+                                  _loadDataController.taskListUpload(
+                                      _loadDataController.currentUserId.value);
 
-                                _loadDataController.getTodayTasks();
-                                _loadDataController.getTodayCompletedTasks();
+                                  _loadDataController.getTodayTasks();
+                                  _loadDataController.getTodayCompletedTasks();
 
-                                Get.back();
-                              } else {
-                                print('WIFI ON NO INTERNET');
+                                  Get.back();
+                                } else {
+                                  print('WIFI ON NO INTERNET');
+                                  Get.showSnackbar(GetSnackBar(
+                                    duration: Duration(seconds: 5),
+                                    messageText: Text(
+                                      'No internet connection. Please check your internet connection and try again.',
+                                      style: GoogleFonts.poppins(
+                                          color: white,
+                                          fontSize: height * 0.02,
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                  ));
+                                }
+                              } on SocketException catch (e) {
                                 Get.showSnackbar(GetSnackBar(
                                   duration: Duration(seconds: 5),
                                   messageText: Text(
@@ -325,11 +339,11 @@ class _AddTaskSheetState extends State {
                                   ),
                                 ));
                               }
-                            } on SocketException catch (e) {
+                            } else {
                               Get.showSnackbar(GetSnackBar(
                                 duration: Duration(seconds: 5),
                                 messageText: Text(
-                                  'No internet connection. Please check your internet connection and try again.',
+                                  'Please add a name of the task',
                                   style: GoogleFonts.poppins(
                                       color: white,
                                       fontSize: height * 0.02,

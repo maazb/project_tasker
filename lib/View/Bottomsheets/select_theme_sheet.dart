@@ -1,11 +1,15 @@
 // ignore_for_file: file_names
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:project_tasker/Controller/database.dart';
 import 'package:project_tasker/Controller/load_data_controller.dart';
 import 'package:project_tasker/Helper/values.dart';
 import 'package:project_tasker/View/account.dart';
+import 'package:project_tasker/View/home_screen.dart';
 
 class SelectThemeSheet extends StatefulWidget {
   @override
@@ -16,6 +20,7 @@ class _SelectThemeSheetState extends State {
   late double height;
   late double width;
   LoadDataController _loadDataController = Get.find();
+  Database _database = Database();
 
   @override
   Widget build(BuildContext context) {
@@ -72,9 +77,53 @@ class _SelectThemeSheetState extends State {
                                   childAspectRatio: 1),
                           itemBuilder: (builder, index) {
                             return CupertinoButton(
-                              onPressed: () {
-                                _loadDataController.getTheme(index);
-                                Get.offAll(Account());
+                              onPressed: () async {
+                                try {
+                                  print('checking internet');
+
+                                  final result = await InternetAddress.lookup(
+                                      "example.com");
+                                  print('checked internet');
+                                  if (result.isNotEmpty &&
+                                      result[0].rawAddress.isNotEmpty) {
+                                    _database.saveTheme(
+                                        index,
+                                        _loadDataController
+                                            .currentUserId.value);
+                                    _loadDataController.getTheme(index);
+                                    Get.offAll(HomeScreen(
+                                      userEmail: _loadDataController
+                                          .currentUserEmail.value,
+                                      userId: _loadDataController
+                                          .currentUserId.value,
+                                      userName: _loadDataController
+                                          .currentUserName.value,
+                                    ));
+                                  } else {
+                                    print('WIFI ON NO INTERNET');
+                                    Get.showSnackbar(GetSnackBar(
+                                      duration: Duration(seconds: 5),
+                                      messageText: Text(
+                                        'No internet connection. Please check your internet connection and try again.',
+                                        style: GoogleFonts.poppins(
+                                            color: white,
+                                            fontSize: height * 0.02,
+                                            fontWeight: FontWeight.w400),
+                                      ),
+                                    ));
+                                  }
+                                } on SocketException catch (e) {
+                                  Get.showSnackbar(GetSnackBar(
+                                    duration: Duration(seconds: 5),
+                                    messageText: Text(
+                                      'No internet connection. Please check your internet connection and try again.',
+                                      style: GoogleFonts.poppins(
+                                          color: white,
+                                          fontSize: height * 0.02,
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                  ));
+                                }
                               },
                               padding: EdgeInsets.all(0),
                               minSize: width * 0.001,

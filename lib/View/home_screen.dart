@@ -39,6 +39,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    _loadDataController.addColors();
+    _loadDataController.addThemes();
 
     getData();
     //getToDo();
@@ -54,6 +56,10 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadDataController.currentUserId.value = widget.userId!;
     _loadDataController.currentUserName.value = widget.userName!;
     _loadDataController.currentUserEmail.value = widget.userEmail!;
+
+    _loadDataController.getTheme(await _database.getTheme(widget.userId!));
+    _loadDataController.selectedHomeAvatar.value = _loadDataController
+        .getAvatar(await _database.getAvatar(widget.userId!));
     try {
       print('checking internet');
 
@@ -95,14 +101,13 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     //_loadDataController.getTodayTasks();
-
-    _loadDataController.addColors();
-    _loadDataController.addThemes();
   }
 
   void getToDo() async {
     await _loadDataController.getTodayTotalTasks();
-    await _loadDataController.getTodayCompletedTasks();
+    await _loadDataController
+        .getTodayCompletedTasks()
+        .then((value) => _loadDataController.mainLoading.value = false);
     setState(() {});
   }
 
@@ -177,636 +182,648 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          child: Column(
-            children: [
-              Container(
-                margin: EdgeInsets.symmetric(
-                    horizontal: width * 0.055, vertical: height * 0.02),
-                height: height * 0.18,
-                width: width,
-                decoration: BoxDecoration(
-                    color: primaryColor,
-                    borderRadius: BorderRadius.circular(width * 0.06)),
-                child: Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                          horizontal: width * 0.04, vertical: height * 0.025),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Container(
-                            child: Text(
-                              "Today",
-                              style: GoogleFonts.poppins(
-                                  color: white,
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: height * 0.022),
-                            ),
-                          ),
-                          Obx(
-                            () => Container(
-                              child: Text(
-                                _loadDataController.completedTodayTasks.value
-                                        .toString() +
-                                    "/" +
-                                    _loadDataController.todayTasks.value
-                                        .toString() +
-                                    " tasks",
-                                style: GoogleFonts.poppins(
-                                    color: white,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: height * 0.032),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
+      body: Obx(
+        () => SingleChildScrollView(
+          child: _loadDataController.mainLoading.value == true
+              ? Center(
+                  child: Container(
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.only(top: height * 0.3),
+                    child: CircularProgressIndicator(
+                      color: primaryColor,
+                      strokeWidth: 3.2,
                     ),
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(width * 0.0),
-                        margin: EdgeInsets.only(top: height * 0.02),
-                        child: Image.asset(
-                          _loadDataController.selectedHomeAvatar.value,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Obx(
-                () => Container(
-                  child: _loadDataController.noteList.length == 0
-                      ? Container()
-                      : Column(
+                  ),
+                )
+              : Container(
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.symmetric(
+                            horizontal: width * 0.055, vertical: height * 0.02),
+                        height: height * 0.18,
+                        width: width,
+                        decoration: BoxDecoration(
+                            color: primaryColor,
+                            borderRadius: BorderRadius.circular(width * 0.06)),
+                        child: Row(
                           children: [
                             Container(
-                              margin: EdgeInsets.only(
-                                  left: width * 0.055,
-                                  right: width * 0.055,
-                                  top: height * 0.015),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: width * 0.04,
+                                  vertical: height * 0.025),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  Text(
-                                    "Short Notes",
-                                    style: GoogleFonts.poppins(
-                                        color: textColor,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: height * 0.025),
+                                  Container(
+                                    child: Text(
+                                      "Today",
+                                      style: GoogleFonts.poppins(
+                                          color: white,
+                                          fontWeight: FontWeight.w300,
+                                          fontSize: height * 0.022),
+                                    ),
                                   ),
+                                  Obx(
+                                    () => Container(
+                                      child: Text(
+                                        _loadDataController
+                                                .completedTodayTasks.value
+                                                .toString() +
+                                            "/" +
+                                            _loadDataController.todayTasks.value
+                                                .toString() +
+                                            " tasks",
+                                        style: GoogleFonts.poppins(
+                                            color: white,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: height * 0.032),
+                                      ),
+                                    ),
+                                  )
                                 ],
                               ),
                             ),
-                            Obx(
-                              () => Container(
-                                  height: height * 0.2,
-                                  child: ListView.builder(
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount:
-                                          _loadDataController.noteList.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        return Row(
-                                          children: [
-                                            index == 0
-                                                ? SizedBox(
-                                                    width: width * 0.055,
-                                                  )
-                                                : Container(),
-                                            Stack(
-                                              children: [
-                                                CupertinoButton(
-                                                  onPressed: () {
-                                                    Get.bottomSheet(
-                                                        EditNoteSheet(
-                                                      index: index,
-                                                      note: _loadDataController
-                                                          .noteList[index]
-                                                          .content,
-                                                    ));
-                                                  },
-                                                  padding: EdgeInsets.all(0),
-                                                  minSize: width * 0.001,
-                                                  child: Container(
-                                                    height: height * 0.17,
-                                                    width: height * 0.17,
-                                                    decoration: BoxDecoration(
-                                                        color: grey,
-                                                        // boxShadow: [
-                                                        //   BoxShadow(
-                                                        //       offset: Offset(0, 2),
-                                                        //       color: grey,
-                                                        //       blurRadius: 20),
-                                                        // ],
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                                    width *
-                                                                        0.06)),
-                                                    child: Container(
-                                                      padding: EdgeInsets.all(
-                                                          height * 0.015),
-                                                      child: Text(
-                                                        _loadDataController
-                                                            .noteList
-                                                            .value[index]
-                                                            .content!,
-                                                        style:
-                                                            GoogleFonts.poppins(
-                                                                color:
-                                                                    textColor,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w400,
-                                                                fontSize:
-                                                                    height *
-                                                                        0.014),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                Positioned(
-                                                    right: height * 0.012,
-                                                    bottom: height * 0.012,
-                                                    child: Container(
-                                                      height: height * 0.035,
-                                                      width: height * 0.035,
-                                                      decoration: BoxDecoration(
-                                                        color: white,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(
-                                                                    height * 3),
-                                                      ),
-                                                      child: CupertinoButton(
-                                                        onPressed: () async {
-                                                          try {
-                                                            print(
-                                                                'checking internet');
-
-                                                            final result =
-                                                                await InternetAddress
-                                                                    .lookup(
-                                                                        "example.com");
-                                                            print(
-                                                                'checked internet');
-                                                            if (result
-                                                                    .isNotEmpty &&
-                                                                result[0]
-                                                                    .rawAddress
-                                                                    .isNotEmpty) {
-// _database.deleteNote(
-                                                              //     index,
-                                                              //     _loadDataController
-                                                              //         .currentUserId
-                                                              //         .value);
-                                                              _loadDataController
-                                                                  .noteList
-                                                                  .remove(_loadDataController
-                                                                          .noteList[
-                                                                      index]);
-
-                                                              _database.deleteNoteList(
+                            Expanded(
+                              child: Container(
+                                padding: EdgeInsets.all(width * 0.0),
+                                margin: EdgeInsets.only(top: height * 0.02),
+                                child: Image.asset(
+                                  _loadDataController.selectedHomeAvatar.value,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      Obx(
+                        () => Container(
+                          child: _loadDataController.noteList.length == 0
+                              ? Container()
+                              : Column(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.only(
+                                          left: width * 0.055,
+                                          right: width * 0.055,
+                                          top: height * 0.015),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Short Notes",
+                                            style: GoogleFonts.poppins(
+                                                color: textColor,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: height * 0.025),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Obx(
+                                      () => Container(
+                                          height: height * 0.2,
+                                          child: ListView.builder(
+                                              scrollDirection: Axis.horizontal,
+                                              itemCount: _loadDataController
+                                                  .noteList.length,
+                                              itemBuilder:
+                                                  (BuildContext context,
+                                                      int index) {
+                                                return Row(
+                                                  children: [
+                                                    index == 0
+                                                        ? SizedBox(
+                                                            width:
+                                                                width * 0.055,
+                                                          )
+                                                        : Container(),
+                                                    Stack(
+                                                      children: [
+                                                        CupertinoButton(
+                                                          onPressed: () {
+                                                            Get.bottomSheet(
+                                                                EditNoteSheet(
+                                                              index: index,
+                                                              note:
                                                                   _loadDataController
-                                                                      .currentUserId
-                                                                      .value);
-                                                              _loadDataController
-                                                                  .noteListUpload(
+                                                                      .noteList[
+                                                                          index]
+                                                                      .content,
+                                                            ));
+                                                          },
+                                                          padding:
+                                                              EdgeInsets.all(0),
+                                                          minSize:
+                                                              width * 0.001,
+                                                          child: Container(
+                                                            height:
+                                                                height * 0.17,
+                                                            width:
+                                                                height * 0.17,
+                                                            decoration: BoxDecoration(
+                                                                color: grey,
+                                                                // boxShadow: [
+                                                                //   BoxShadow(
+                                                                //       offset: Offset(0, 2),
+                                                                //       color: grey,
+                                                                //       blurRadius: 20),
+                                                                // ],
+                                                                borderRadius: BorderRadius.circular(width * 0.06)),
+                                                            child: Container(
+                                                              padding: EdgeInsets
+                                                                  .all(height *
+                                                                      0.015),
+                                                              child: Text(
+                                                                _loadDataController
+                                                                    .noteList
+                                                                    .value[
+                                                                        index]
+                                                                    .content!,
+                                                                style: GoogleFonts.poppins(
+                                                                    color:
+                                                                        textColor,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400,
+                                                                    fontSize:
+                                                                        height *
+                                                                            0.014),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Positioned(
+                                                            right:
+                                                                height * 0.012,
+                                                            bottom:
+                                                                height * 0.012,
+                                                            child: Container(
+                                                              height: height *
+                                                                  0.035,
+                                                              width: height *
+                                                                  0.035,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: white,
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            height *
+                                                                                3),
+                                                              ),
+                                                              child:
+                                                                  CupertinoButton(
+                                                                onPressed:
+                                                                    () async {
+                                                                  try {
+                                                                    print(
+                                                                        'checking internet');
+
+                                                                    final result =
+                                                                        await InternetAddress.lookup(
+                                                                            "example.com");
+                                                                    print(
+                                                                        'checked internet');
+                                                                    if (result
+                                                                            .isNotEmpty &&
+                                                                        result[0]
+                                                                            .rawAddress
+                                                                            .isNotEmpty) {
+                                                                      // _database.deleteNote(
+                                                                      //     index,
+                                                                      //     _loadDataController
+                                                                      //         .currentUserId
+                                                                      //         .value);
+                                                                      _loadDataController
+                                                                          .noteList
+                                                                          .remove(
+                                                                              _loadDataController.noteList[index]);
+
+                                                                      _database.deleteNoteList(_loadDataController
+                                                                          .currentUserId
+                                                                          .value);
+                                                                      _loadDataController.noteListUpload(_loadDataController
+                                                                          .currentUserId
+                                                                          .value);
+                                                                    } else {
+                                                                      print(
+                                                                          'WIFI ON NO INTERNET');
+                                                                      Get.showSnackbar(
+                                                                          GetSnackBar(
+                                                                        duration:
+                                                                            Duration(seconds: 5),
+                                                                        messageText:
+                                                                            Text(
+                                                                          'No internet connection. Please check your internet connection and try again.',
+                                                                          style: GoogleFonts.poppins(
+                                                                              color: white,
+                                                                              fontSize: height * 0.02,
+                                                                              fontWeight: FontWeight.w400),
+                                                                        ),
+                                                                      ));
+                                                                    }
+                                                                  } on SocketException catch (e) {
+                                                                    Get.showSnackbar(
+                                                                        GetSnackBar(
+                                                                      duration: Duration(
+                                                                          seconds:
+                                                                              5),
+                                                                      messageText:
+                                                                          Text(
+                                                                        'No internet connection. Please check your internet connection and try again.',
+                                                                        style: GoogleFonts.poppins(
+                                                                            color:
+                                                                                white,
+                                                                            fontSize: height *
+                                                                                0.02,
+                                                                            fontWeight:
+                                                                                FontWeight.w400),
+                                                                      ),
+                                                                    ));
+                                                                  }
+                                                                },
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .all(0),
+                                                                minSize:
+                                                                    height *
+                                                                        0.035,
+                                                                child:
+                                                                    Container(
+                                                                  child: Icon(
+                                                                    CupertinoIcons
+                                                                        .trash,
+                                                                    color:
+                                                                        textColor,
+                                                                    size: height *
+                                                                        0.022,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ))
+                                                      ],
+                                                    ),
+                                                    SizedBox(
+                                                      width: width * 0.03,
+                                                    )
+                                                  ],
+                                                );
+                                              })),
+                                    )
+                                  ],
+                                ),
+                        ),
+                      ),
+                      Obx(
+                        () => Container(
+                          child: _loadDataController.loading.value == true
+                              ? Center(
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(
+                                        vertical: height * 0.1),
+                                    child: CircularProgressIndicator(
+                                      color: primaryColor,
+                                      strokeWidth: 3.2,
+                                    ),
+                                  ),
+                                )
+                              : Column(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.only(
+                                          left: width * 0.055,
+                                          right: width * 0.055,
+                                          top: height * 0.015),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "To do",
+                                            style: GoogleFonts.poppins(
+                                                color: textColor,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: height * 0.025),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: width * 0.055),
+                                        //height: height * 0.2,
+                                        child: Obx(
+                                          () => ListView.builder(
+                                              scrollDirection: Axis.vertical,
+                                              shrinkWrap: true,
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+                                              itemCount: _loadDataController
+                                                  .taskList.length,
+                                              itemBuilder:
+                                                  (BuildContext context,
+                                                      int index) {
+                                                return _loadDataController
+                                                            .taskList[index]
+                                                            .date!
+                                                            .day !=
+                                                        DateTime.now().day
+                                                    ? Container()
+                                                    : Column(
+                                                        children: [
+                                                          index == 0
+                                                              ? SizedBox(
+                                                                  height:
+                                                                      height *
+                                                                          0.018,
+                                                                )
+                                                              : Container(),
+                                                          GestureDetector(
+                                                            onHorizontalDragEnd:
+                                                                (details) async {
+                                                              try {
+                                                                print(
+                                                                    'checking internet');
+
+                                                                final result =
+                                                                    await InternetAddress
+                                                                        .lookup(
+                                                                            "example.com");
+                                                                print(
+                                                                    'checked internet');
+                                                                if (result
+                                                                        .isNotEmpty &&
+                                                                    result[0]
+                                                                        .rawAddress
+                                                                        .isNotEmpty) {
+                                                                  _loadDataController
+                                                                      .taskList
+                                                                      .remove(_loadDataController
+                                                                              .taskList[
+                                                                          index]);
+
+                                                                  _database.deleteTaskList(
                                                                       _loadDataController
                                                                           .currentUserId
                                                                           .value);
-                                                            } else {
-                                                              print(
-                                                                  'WIFI ON NO INTERNET');
-                                                              Get.showSnackbar(
-                                                                  GetSnackBar(
-                                                                duration:
-                                                                    Duration(
+                                                                  _loadDataController.taskListUpload(
+                                                                      _loadDataController
+                                                                          .currentUserId
+                                                                          .value);
+                                                                } else {
+                                                                  print(
+                                                                      'WIFI ON NO INTERNET');
+                                                                  Get.showSnackbar(
+                                                                      GetSnackBar(
+                                                                    duration: Duration(
                                                                         seconds:
                                                                             5),
-                                                                messageText:
-                                                                    Text(
-                                                                  'No internet connection. Please check your internet connection and try again.',
-                                                                  style: GoogleFonts.poppins(
-                                                                      color:
-                                                                          white,
-                                                                      fontSize:
-                                                                          height *
+                                                                    messageText:
+                                                                        Text(
+                                                                      'No internet connection. Please check your internet connection and try again.',
+                                                                      style: GoogleFonts.poppins(
+                                                                          color:
+                                                                              white,
+                                                                          fontSize: height *
                                                                               0.02,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w400),
-                                                                ),
-                                                              ));
-                                                            }
-                                                          } on SocketException catch (e) {
-                                                            Get.showSnackbar(
-                                                                GetSnackBar(
-                                                              duration:
-                                                                  Duration(
-                                                                      seconds:
-                                                                          5),
-                                                              messageText: Text(
-                                                                'No internet connection. Please check your internet connection and try again.',
-                                                                style: GoogleFonts.poppins(
-                                                                    color:
-                                                                        white,
-                                                                    fontSize:
-                                                                        height *
-                                                                            0.02,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w400),
-                                                              ),
-                                                            ));
-                                                          }
-                                                        },
-                                                        padding:
-                                                            EdgeInsets.all(0),
-                                                        minSize: height * 0.035,
-                                                        child: Container(
-                                                          child: Icon(
-                                                            CupertinoIcons
-                                                                .trash,
-                                                            color: textColor,
-                                                            size:
-                                                                height * 0.022,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ))
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              width: width * 0.03,
-                                            )
-                                          ],
-                                        );
-                                      })),
-                            )
-                          ],
-                        ),
-                ),
-              ),
-              Obx(
-                () => Container(
-                  child: _loadDataController.loading.value == true
-                      ? Center(
-                          child: Container(
-                            margin:
-                                EdgeInsets.symmetric(vertical: height * 0.1),
-                            child: CircularProgressIndicator(
-                              color: primaryColor,
-                              strokeWidth: 3.2,
-                            ),
-                          ),
-                        )
-                      : Column(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.only(
-                                  left: width * 0.055,
-                                  right: width * 0.055,
-                                  top: height * 0.015),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "To do",
-                                    style: GoogleFonts.poppins(
-                                        color: textColor,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: height * 0.025),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: width * 0.055),
-                                //height: height * 0.2,
-                                child: Obx(
-                                  () => ListView.builder(
-                                      scrollDirection: Axis.vertical,
-                                      shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      itemCount:
-                                          _loadDataController.taskList.length,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        return _loadDataController
-                                                    .taskList[index]
-                                                    .date!
-                                                    .day !=
-                                                DateTime.now().day
-                                            ? Container()
-                                            : Column(
-                                                children: [
-                                                  index == 0
-                                                      ? SizedBox(
-                                                          height:
-                                                              height * 0.018,
-                                                        )
-                                                      : Container(),
-                                                  GestureDetector(
-                                                    onHorizontalDragEnd:
-                                                        (details) async {
-                                                      try {
-                                                        print(
-                                                            'checking internet');
-
-                                                        final result =
-                                                            await InternetAddress
-                                                                .lookup(
-                                                                    "example.com");
-                                                        print(
-                                                            'checked internet');
-                                                        if (result.isNotEmpty &&
-                                                            result[0]
-                                                                .rawAddress
-                                                                .isNotEmpty) {
-                                                          _loadDataController
-                                                              .taskList
-                                                              .remove(_loadDataController
-                                                                      .taskList[
-                                                                  index]);
-
-                                                          _database.deleteTaskList(
-                                                              _loadDataController
-                                                                  .currentUserId
-                                                                  .value);
-                                                          _loadDataController
-                                                              .taskListUpload(
-                                                                  _loadDataController
-                                                                      .currentUserId
-                                                                      .value);
-                                                        } else {
-                                                          print(
-                                                              'WIFI ON NO INTERNET');
-                                                          Get.showSnackbar(
-                                                              GetSnackBar(
-                                                            duration: Duration(
-                                                                seconds: 5),
-                                                            messageText: Text(
-                                                              'No internet connection. Please check your internet connection and try again.',
-                                                              style: GoogleFonts.poppins(
-                                                                  color: white,
-                                                                  fontSize:
-                                                                      height *
-                                                                          0.02,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400),
-                                                            ),
-                                                          ));
-                                                        }
-                                                      } on SocketException catch (e) {
-                                                        Get.showSnackbar(
-                                                            GetSnackBar(
-                                                          duration: Duration(
-                                                              seconds: 5),
-                                                          messageText: Text(
-                                                            'No internet connection. Please check your internet connection and try again.',
-                                                            style: GoogleFonts
-                                                                .poppins(
-                                                                    color:
-                                                                        white,
-                                                                    fontSize:
-                                                                        height *
-                                                                            0.02,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w400),
-                                                          ),
-                                                        ));
-                                                      }
-                                                    },
-                                                    child: CupertinoButton(
-                                                      onPressed: () async {
-                                                        try {
-                                                          print(
-                                                              'checking internet');
-
-                                                          final result =
-                                                              await InternetAddress
-                                                                  .lookup(
-                                                                      "example.com");
-                                                          print(
-                                                              'checked internet');
-                                                          if (result
-                                                                  .isNotEmpty &&
-                                                              result[0]
-                                                                  .rawAddress
-                                                                  .isNotEmpty) {
-                                                            if (_loadDataController
-                                                                    .taskList[
-                                                                        index]
-                                                                    .completed ==
-                                                                false) {
-                                                              _loadDataController
-                                                                      .taskList[
-                                                                          index]
-                                                                      .completed =
-                                                                  true;
-                                                              _database.deleteTaskList(
-                                                                  _loadDataController
-                                                                      .currentUserId
-                                                                      .value);
-
-                                                              _loadDataController
-                                                                  .taskListUpload(
-                                                                      _loadDataController
-                                                                          .currentUserId
-                                                                          .value);
-
-                                                              _loadDataController
-                                                                  .getTodayTotalTasks();
-
-                                                              _loadDataController
-                                                                  .getTodayCompletedTasks();
-                                                            } else {
-                                                              _loadDataController
-                                                                      .taskList[
-                                                                          index]
-                                                                      .completed =
-                                                                  false;
-
-                                                              _database.deleteTaskList(
-                                                                  _loadDataController
-                                                                      .currentUserId
-                                                                      .value);
-
-                                                              _loadDataController
-                                                                  .taskListUpload(
-                                                                      _loadDataController
-                                                                          .currentUserId
-                                                                          .value);
-
-                                                              _loadDataController
-                                                                  .getTodayTotalTasks();
-
-                                                              _loadDataController
-                                                                  .getTodayCompletedTasks();
-                                                            }
-
-                                                            setState(() {});
-                                                            _loadDataController
-                                                                .getTodayCompletedTasks();
-                                                          } else {
-                                                            print(
-                                                                'WIFI ON NO INTERNET');
-                                                            Get.showSnackbar(
-                                                                GetSnackBar(
-                                                              duration:
-                                                                  Duration(
-                                                                      seconds:
-                                                                          5),
-                                                              messageText: Text(
-                                                                'No internet connection. Please check your internet connection and try again.',
-                                                                style: GoogleFonts.poppins(
-                                                                    color:
-                                                                        white,
-                                                                    fontSize:
-                                                                        height *
-                                                                            0.02,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w400),
-                                                              ),
-                                                            ));
-                                                          }
-                                                        } on SocketException catch (e) {
-                                                          Get.showSnackbar(
-                                                              GetSnackBar(
-                                                            duration: Duration(
-                                                                seconds: 5),
-                                                            messageText: Text(
-                                                              'No internet connection. Please check your internet connection and try again.',
-                                                              style: GoogleFonts.poppins(
-                                                                  color: white,
-                                                                  fontSize:
-                                                                      height *
-                                                                          0.02,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400),
-                                                            ),
-                                                          ));
-                                                        }
-                                                      },
-                                                      padding:
-                                                          EdgeInsets.all(0),
-                                                      minSize: width * 0.001,
-                                                      child: Container(
-                                                        height: height * 0.1,
-                                                        width: width,
-                                                        decoration: BoxDecoration(
-                                                            color: white,
-                                                            boxShadow: [
-                                                              BoxShadow(
-                                                                  offset:
-                                                                      Offset(
-                                                                          0, 4),
-                                                                  color: grey2,
-                                                                  blurRadius:
-                                                                      15)
-                                                            ],
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        width *
-                                                                            0.06)),
-                                                        child: Container(
-                                                          padding: EdgeInsets
-                                                              .symmetric(
-                                                                  vertical:
-                                                                      height *
-                                                                          0.02,
-                                                                  horizontal:
-                                                                      width *
-                                                                          0.04),
-                                                          child: Center(
-                                                            child: Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceBetween,
-                                                              children: [
-                                                                Expanded(
-                                                                  child: Text(
-                                                                    _loadDataController
-                                                                        .taskList[
-                                                                            index]
-                                                                        .taskName!,
+                                                                          fontWeight:
+                                                                              FontWeight.w400),
+                                                                    ),
+                                                                  ));
+                                                                }
+                                                              } on SocketException catch (e) {
+                                                                Get.showSnackbar(
+                                                                    GetSnackBar(
+                                                                  duration:
+                                                                      Duration(
+                                                                          seconds:
+                                                                              5),
+                                                                  messageText:
+                                                                      Text(
+                                                                    'No internet connection. Please check your internet connection and try again.',
                                                                     style: GoogleFonts.poppins(
                                                                         color:
-                                                                            textColor,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w400,
+                                                                            white,
                                                                         fontSize:
                                                                             height *
-                                                                                0.020),
+                                                                                0.02,
+                                                                        fontWeight:
+                                                                            FontWeight.w400),
                                                                   ),
-                                                                ),
-                                                                Obx(
-                                                                  () =>
-                                                                      Container(
-                                                                    padding: EdgeInsets.only(
-                                                                        right: width *
-                                                                            0.02,
-                                                                        left: width *
-                                                                            0.04),
-                                                                    child:
-                                                                        Center(
-                                                                      child: _loadDataController.taskList[index].completed ==
-                                                                              true
-                                                                          ? Container(
-                                                                              height: width * 0.05,
-                                                                              width: width * 0.05,
-                                                                              decoration: BoxDecoration(color: primaryColor, border: Border.all(color: primaryColor, style: BorderStyle.solid, width: width * 0.0025), borderRadius: BorderRadius.circular(width * 0.015)),
-                                                                              child: Icon(
-                                                                                CupertinoIcons.check_mark,
-                                                                                color: white,
-                                                                                size: width * 0.03,
-                                                                              ))
-                                                                          : Container(
-                                                                              height: width * 0.05,
-                                                                              width: width * 0.05,
-                                                                              decoration: BoxDecoration(border: Border.all(color: textColor, style: BorderStyle.solid, width: width * 0.0025), borderRadius: BorderRadius.circular(width * 0.015)),
+                                                                ));
+                                                              }
+                                                            },
+                                                            child:
+                                                                CupertinoButton(
+                                                              onPressed:
+                                                                  () async {
+                                                                try {
+                                                                  print(
+                                                                      'checking internet');
+
+                                                                  final result =
+                                                                      await InternetAddress
+                                                                          .lookup(
+                                                                              "example.com");
+                                                                  print(
+                                                                      'checked internet');
+                                                                  if (result
+                                                                          .isNotEmpty &&
+                                                                      result[0]
+                                                                          .rawAddress
+                                                                          .isNotEmpty) {
+                                                                    if (_loadDataController
+                                                                            .taskList[index]
+                                                                            .completed ==
+                                                                        false) {
+                                                                      _loadDataController
+                                                                          .taskList[
+                                                                              index]
+                                                                          .completed = true;
+                                                                      _database.deleteTaskList(_loadDataController
+                                                                          .currentUserId
+                                                                          .value);
+
+                                                                      _loadDataController.taskListUpload(_loadDataController
+                                                                          .currentUserId
+                                                                          .value);
+
+                                                                      _loadDataController
+                                                                          .getTodayTotalTasks();
+
+                                                                      _loadDataController
+                                                                          .getTodayCompletedTasks();
+                                                                    } else {
+                                                                      _loadDataController
+                                                                          .taskList[
+                                                                              index]
+                                                                          .completed = false;
+
+                                                                      _database.deleteTaskList(_loadDataController
+                                                                          .currentUserId
+                                                                          .value);
+
+                                                                      _loadDataController.taskListUpload(_loadDataController
+                                                                          .currentUserId
+                                                                          .value);
+
+                                                                      _loadDataController
+                                                                          .getTodayTotalTasks();
+
+                                                                      _loadDataController
+                                                                          .getTodayCompletedTasks();
+                                                                    }
+
+                                                                    setState(
+                                                                        () {});
+                                                                    _loadDataController
+                                                                        .getTodayCompletedTasks();
+                                                                  } else {
+                                                                    print(
+                                                                        'WIFI ON NO INTERNET');
+                                                                    Get.showSnackbar(
+                                                                        GetSnackBar(
+                                                                      duration: Duration(
+                                                                          seconds:
+                                                                              5),
+                                                                      messageText:
+                                                                          Text(
+                                                                        'No internet connection. Please check your internet connection and try again.',
+                                                                        style: GoogleFonts.poppins(
+                                                                            color:
+                                                                                white,
+                                                                            fontSize: height *
+                                                                                0.02,
+                                                                            fontWeight:
+                                                                                FontWeight.w400),
+                                                                      ),
+                                                                    ));
+                                                                  }
+                                                                } on SocketException catch (e) {
+                                                                  Get.showSnackbar(
+                                                                      GetSnackBar(
+                                                                    duration: Duration(
+                                                                        seconds:
+                                                                            5),
+                                                                    messageText:
+                                                                        Text(
+                                                                      'No internet connection. Please check your internet connection and try again.',
+                                                                      style: GoogleFonts.poppins(
+                                                                          color:
+                                                                              white,
+                                                                          fontSize: height *
+                                                                              0.02,
+                                                                          fontWeight:
+                                                                              FontWeight.w400),
+                                                                    ),
+                                                                  ));
+                                                                }
+                                                              },
+                                                              padding:
+                                                                  EdgeInsets
+                                                                      .all(0),
+                                                              minSize:
+                                                                  width * 0.001,
+                                                              child: Container(
+                                                                height: height *
+                                                                    0.1,
+                                                                width: width,
+                                                                decoration: BoxDecoration(
+                                                                    color:
+                                                                        white,
+                                                                    boxShadow: [
+                                                                      BoxShadow(
+                                                                          offset: Offset(0,
+                                                                              4),
+                                                                          color:
+                                                                              grey2,
+                                                                          blurRadius:
+                                                                              15)
+                                                                    ],
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(width *
+                                                                            0.06)),
+                                                                child:
+                                                                    Container(
+                                                                  padding: EdgeInsets.symmetric(
+                                                                      vertical:
+                                                                          height *
+                                                                              0.02,
+                                                                      horizontal:
+                                                                          width *
+                                                                              0.04),
+                                                                  child: Center(
+                                                                    child: Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .spaceBetween,
+                                                                      children: [
+                                                                        Expanded(
+                                                                          child:
+                                                                              Text(
+                                                                            _loadDataController.taskList[index].taskName!,
+                                                                            style: GoogleFonts.poppins(
+                                                                                color: textColor,
+                                                                                fontWeight: FontWeight.w400,
+                                                                                fontSize: height * 0.020),
+                                                                          ),
+                                                                        ),
+                                                                        Obx(
+                                                                          () =>
+                                                                              Container(
+                                                                            padding:
+                                                                                EdgeInsets.only(right: width * 0.02, left: width * 0.04),
+                                                                            child:
+                                                                                Center(
+                                                                              child: _loadDataController.taskList[index].completed == true
+                                                                                  ? Container(
+                                                                                      height: width * 0.05,
+                                                                                      width: width * 0.05,
+                                                                                      decoration: BoxDecoration(color: primaryColor, border: Border.all(color: primaryColor, style: BorderStyle.solid, width: width * 0.0025), borderRadius: BorderRadius.circular(width * 0.015)),
+                                                                                      child: Icon(
+                                                                                        CupertinoIcons.check_mark,
+                                                                                        color: white,
+                                                                                        size: width * 0.03,
+                                                                                      ))
+                                                                                  : Container(
+                                                                                      height: width * 0.05,
+                                                                                      width: width * 0.05,
+                                                                                      decoration: BoxDecoration(border: Border.all(color: textColor, style: BorderStyle.solid, width: width * 0.0025), borderRadius: BorderRadius.circular(width * 0.015)),
+                                                                                    ),
                                                                             ),
+                                                                          ),
+                                                                        )
+                                                                      ],
                                                                     ),
                                                                   ),
-                                                                )
-                                                              ],
+                                                                ),
+                                                              ),
                                                             ),
                                                           ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(
-                                                    height: height * 0.02,
-                                                  )
-                                                ],
-                                              );
-                                      }),
-                                )),
-                            SizedBox(
-                              height: height * 0.15,
-                            )
-                          ],
+                                                          SizedBox(
+                                                            height:
+                                                                height * 0.02,
+                                                          )
+                                                        ],
+                                                      );
+                                              }),
+                                        )),
+                                    SizedBox(
+                                      height: height * 0.15,
+                                    )
+                                  ],
+                                ),
                         ),
+                      )
+                    ],
+                  ),
                 ),
-              )
-            ],
-          ),
         ),
       ),
+
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: BottomNavigation(),
       // Container(

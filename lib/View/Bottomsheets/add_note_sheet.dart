@@ -130,37 +130,50 @@ class _AddNoteSheetState extends State {
                         CupertinoButton(
                           padding: EdgeInsets.all(0),
                           onPressed: () async {
-                            try {
-                              print('checking internet');
+                            if (_textEditingController.text.isEmpty == false) {
+                              try {
+                                print('checking internet');
 
-                              final result =
-                                  await InternetAddress.lookup("example.com");
-                              print('checked internet');
-                              if (result.isNotEmpty &&
-                                  result[0].rawAddress.isNotEmpty) {
-                                // _database.saveNote(
-                                //     Note(
-                                //         id: _loadDataController.noteList.length,
-                                //         content: _textEditingController.text),
-                                //     _loadDataController.currentUserId.value);
-                                _loadDataController.noteList.add(Note(
-                                    id: _loadDataController.noteList.length,
-                                    content: _textEditingController.text));
+                                final result =
+                                    await InternetAddress.lookup("example.com");
+                                print('checked internet');
+                                if (result.isNotEmpty &&
+                                    result[0].rawAddress.isNotEmpty) {
+                                  // _database.saveNote(
+                                  //     Note(
+                                  //         id: _loadDataController.noteList.length,
+                                  //         content: _textEditingController.text),
+                                  //     _loadDataController.currentUserId.value);
+                                  _loadDataController.noteList.add(Note(
+                                      id: _loadDataController.noteList.length,
+                                      content: _textEditingController.text));
 
-                                _database.deleteNoteList(
-                                    _loadDataController.currentUserId.value);
+                                  _database.deleteNoteList(
+                                      _loadDataController.currentUserId.value);
 
-                                _loadDataController.noteListUpload(
-                                    _loadDataController.currentUserId.value);
+                                  _loadDataController.noteListUpload(
+                                      _loadDataController.currentUserId.value);
 
-                                //print(_loadDataController.noteList.value.toString());
+                                  //print(_loadDataController.noteList.value.toString());
 
-                                // _database.saveNoteLimit(
-                                //     _loadDataController.noteList.length,
-                                //     _loadDataController.currentUserId.value);
-                                Get.back();
-                              } else {
-                                print('WIFI ON NO INTERNET');
+                                  // _database.saveNoteLimit(
+                                  //     _loadDataController.noteList.length,
+                                  //     _loadDataController.currentUserId.value);
+                                  Get.back();
+                                } else {
+                                  print('WIFI ON NO INTERNET');
+                                  Get.showSnackbar(GetSnackBar(
+                                    duration: Duration(seconds: 5),
+                                    messageText: Text(
+                                      'No internet connection. Please check your internet connection and try again.',
+                                      style: GoogleFonts.poppins(
+                                          color: white,
+                                          fontSize: height * 0.02,
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                  ));
+                                }
+                              } on SocketException catch (e) {
                                 Get.showSnackbar(GetSnackBar(
                                   duration: Duration(seconds: 5),
                                   messageText: Text(
@@ -172,11 +185,11 @@ class _AddNoteSheetState extends State {
                                   ),
                                 ));
                               }
-                            } on SocketException catch (e) {
+                            } else {
                               Get.showSnackbar(GetSnackBar(
                                 duration: Duration(seconds: 5),
                                 messageText: Text(
-                                  'No internet connection. Please check your internet connection and try again.',
+                                  'Please add some text.',
                                   style: GoogleFonts.poppins(
                                       color: white,
                                       fontSize: height * 0.02,

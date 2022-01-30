@@ -66,22 +66,35 @@ class Database {
   //   }
   // }
 
-  // void saveNoteLimit(int i, String uid) async {
-  //   await FirebaseDatabase.instance
-  //       .ref('users/$uid/noteLimit')
-  //       .set({"limit": i});
-  // }
+  void saveTheme(int i, String uid) async {
+    await FirebaseDatabase.instance.ref('users/$uid/theme').set({"theme": i});
+  }
 
-  // Future<int> getNoteLimit(String uid) async {
-  //   DatabaseEvent event =
-  //       await FirebaseDatabase.instance.ref('users/$uid/noteLimit').once();
-  //   if (event != null) {
-  //     Map<dynamic, dynamic> map = event.snapshot.value as Map<dynamic, dynamic>;
-  //     return map.values.elementAt(0);
-  //   } else {
-  //     return 0;
-  //   }
-  // }
+  Future<int> getTheme(String uid) async {
+    DatabaseEvent event =
+        await FirebaseDatabase.instance.ref('users/$uid/theme').once();
+    if (event != null) {
+      Map<dynamic, dynamic> map = event.snapshot.value as Map<dynamic, dynamic>;
+      return map.values.elementAt(0);
+    } else {
+      return 1;
+    }
+  }
+
+  void saveAvatar(int i, String uid) async {
+    await FirebaseDatabase.instance.ref('users/$uid/avatar').set({"avatar": i});
+  }
+
+  Future<int> getAvatar(String uid) async {
+    DatabaseEvent event =
+        await FirebaseDatabase.instance.ref('users/$uid/avatar').once();
+    if (event != null) {
+      Map<dynamic, dynamic> map = event.snapshot.value as Map<dynamic, dynamic>;
+      return map.values.elementAt(0);
+    } else {
+      return 0;
+    }
+  }
 
   // Future<void> getNote(int noteId, String uid) async {
   //   DatabaseEvent event =

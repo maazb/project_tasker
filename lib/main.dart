@@ -17,9 +17,6 @@ void main() async {
   );
   runApp(GetMaterialApp(
     debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-      primarySwatch: Colors.purple,
-    ),
     home: const MyHomePage(title: 'Flutter Demo Home Page'),
   ));
 
