@@ -511,6 +511,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ],
                                       ),
                                     ),
+                                    SizedBox(
+                                      height: height * 0.02,
+                                    ),
                                     Container(
                                         margin: EdgeInsets.symmetric(
                                             horizontal: width * 0.055),
