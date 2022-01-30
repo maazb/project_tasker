@@ -63,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   loadData() async {
-    Future.delayed(Duration(milliseconds: 3500)).then((value) async {
+    Future.delayed(Duration(milliseconds: 1200)).then((value) async {
       //await LoadDataController.instance.getClassList();
 
       Get.offAll(() => Login());

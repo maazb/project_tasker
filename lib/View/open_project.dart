@@ -1,4 +1,6 @@
 // ignore_for_file: file_names
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -125,65 +127,145 @@ class _OpenProjectState extends State<OpenProject> {
                                             )
                                           : Container(),
                                       GestureDetector(
-                                        onHorizontalDragEnd: (details) {
-                                          _loadDataController.taskList.remove(
-                                              _loadDataController
-                                                  .taskList[index]);
+                                        onHorizontalDragEnd: (details) async {
+                                          try {
+                                            print('checking internet');
 
-                                          _database.deleteTaskList(
+                                            final result =
+                                                await InternetAddress.lookup(
+                                                    "example.com");
+                                            print('checked internet');
+                                            if (result.isNotEmpty &&
+                                                result[0]
+                                                    .rawAddress
+                                                    .isNotEmpty) {
+                                              _loadDataController.taskList
+                                                  .remove(_loadDataController
+                                                      .taskList[index]);
+
+                                              _database.deleteTaskList(
+                                                  _loadDataController
+                                                      .currentUserId.value);
                                               _loadDataController
-                                                  .currentUserId.value);
-                                          _loadDataController.taskListUpload(
-                                              _loadDataController
-                                                  .currentUserId.value);
+                                                  .taskListUpload(
+                                                      _loadDataController
+                                                          .currentUserId.value);
+                                            } else {
+                                              print('WIFI ON NO INTERNET');
+                                              Get.showSnackbar(GetSnackBar(
+                                                duration: Duration(seconds: 5),
+                                                messageText: Text(
+                                                  'No internet connection. Please check your internet connection and try again.',
+                                                  style: GoogleFonts.poppins(
+                                                      color: white,
+                                                      fontSize: height * 0.02,
+                                                      fontWeight:
+                                                          FontWeight.w400),
+                                                ),
+                                              ));
+                                            }
+                                          } on SocketException catch (e) {
+                                            Get.showSnackbar(GetSnackBar(
+                                              duration: Duration(seconds: 5),
+                                              messageText: Text(
+                                                'No internet connection. Please check your internet connection and try again.',
+                                                style: GoogleFonts.poppins(
+                                                    color: white,
+                                                    fontSize: height * 0.02,
+                                                    fontWeight:
+                                                        FontWeight.w400),
+                                              ),
+                                            ));
+                                          }
                                         },
                                         child: CupertinoButton(
-                                          onPressed: () {
-                                            if (_loadDataController
-                                                    .taskList[index]
-                                                    .completed ==
-                                                false) {
-                                              _loadDataController
-                                                  .taskList[index]
-                                                  .completed = true;
-                                              _database.deleteTaskList(
-                                                  _loadDataController
-                                                      .currentUserId.value);
+                                          onPressed: () async {
+                                            try {
+                                              print('checking internet');
 
-                                              _loadDataController
-                                                  .taskListUpload(
+                                              final result =
+                                                  await InternetAddress.lookup(
+                                                      "example.com");
+                                              print('checked internet');
+                                              if (result.isNotEmpty &&
+                                                  result[0]
+                                                      .rawAddress
+                                                      .isNotEmpty) {
+                                                if (_loadDataController
+                                                        .taskList[index]
+                                                        .completed ==
+                                                    false) {
+                                                  _loadDataController
+                                                      .taskList[index]
+                                                      .completed = true;
+                                                  _database.deleteTaskList(
                                                       _loadDataController
                                                           .currentUserId.value);
 
-                                              _loadDataController
-                                                  .getTodayTotalTasks();
-
-                                              _loadDataController
-                                                  .getTodayCompletedTasks();
-                                            } else {
-                                              _loadDataController
-                                                  .taskList[index]
-                                                  .completed = false;
-
-                                              _database.deleteTaskList(
                                                   _loadDataController
-                                                      .currentUserId.value);
+                                                      .taskListUpload(
+                                                          _loadDataController
+                                                              .currentUserId
+                                                              .value);
 
-                                              _loadDataController
-                                                  .taskListUpload(
+                                                  _loadDataController
+                                                      .getTodayTotalTasks();
+
+                                                  _loadDataController
+                                                      .getTodayCompletedTasks();
+                                                } else {
+                                                  _loadDataController
+                                                      .taskList[index]
+                                                      .completed = false;
+
+                                                  _database.deleteTaskList(
                                                       _loadDataController
                                                           .currentUserId.value);
 
-                                              _loadDataController
-                                                  .getTodayTotalTasks();
+                                                  _loadDataController
+                                                      .taskListUpload(
+                                                          _loadDataController
+                                                              .currentUserId
+                                                              .value);
 
-                                              _loadDataController
-                                                  .getTodayCompletedTasks();
+                                                  _loadDataController
+                                                      .getTodayTotalTasks();
+
+                                                  _loadDataController
+                                                      .getTodayCompletedTasks();
+                                                }
+
+                                                setState(() {});
+                                                _loadDataController
+                                                    .getTodayCompletedTasks();
+                                              } else {
+                                                print('WIFI ON NO INTERNET');
+                                                Get.showSnackbar(GetSnackBar(
+                                                  duration:
+                                                      Duration(seconds: 5),
+                                                  messageText: Text(
+                                                    'No internet connection. Please check your internet connection and try again.',
+                                                    style: GoogleFonts.poppins(
+                                                        color: white,
+                                                        fontSize: height * 0.02,
+                                                        fontWeight:
+                                                            FontWeight.w400),
+                                                  ),
+                                                ));
+                                              }
+                                            } on SocketException catch (e) {
+                                              Get.showSnackbar(GetSnackBar(
+                                                duration: Duration(seconds: 5),
+                                                messageText: Text(
+                                                  'No internet connection. Please check your internet connection and try again.',
+                                                  style: GoogleFonts.poppins(
+                                                      color: white,
+                                                      fontSize: height * 0.02,
+                                                      fontWeight:
+                                                          FontWeight.w400),
+                                                ),
+                                              ));
                                             }
-
-                                            setState(() {});
-                                            _loadDataController
-                                                .getTodayCompletedTasks();
                                           },
                                           padding: EdgeInsets.all(0),
                                           minSize: width * 0.001,

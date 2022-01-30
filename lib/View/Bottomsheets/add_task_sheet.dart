@@ -1,5 +1,6 @@
 // ignore_for_file: file_names
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +46,7 @@ class _AddTaskSheetState extends State {
       child: GestureDetector(
         onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
         child: Container(
-          height: height * 0.55,
+          height: height * 0.47,
           decoration: BoxDecoration(
             color: white,
             borderRadius: BorderRadius.only(
@@ -284,25 +285,58 @@ class _AddTaskSheetState extends State {
                         ),
                         CupertinoButton(
                           padding: EdgeInsets.all(0),
-                          onPressed: () {
-                            _loadDataController.taskList.add(Task(
-                                date: selectedDate,
-                                taskId: _loadDataController.taskList.length,
-                                taskName: _textEditingController.text,
-                                projectId: _loadDataController
-                                    .selectedProjectAddTask.value,
-                                completed: false));
+                          onPressed: () async {
+                            try {
+                              print('checking internet');
 
-                            _database.deleteTaskList(
-                                _loadDataController.currentUserId.value);
+                              final result =
+                                  await InternetAddress.lookup("example.com");
+                              print('checked internet');
+                              if (result.isNotEmpty &&
+                                  result[0].rawAddress.isNotEmpty) {
+                                _loadDataController.taskList.add(Task(
+                                    date: selectedDate,
+                                    taskId: _loadDataController.taskList.length,
+                                    taskName: _textEditingController.text,
+                                    projectId: _loadDataController
+                                        .selectedProjectAddTask.value,
+                                    completed: false));
 
-                            _loadDataController.taskListUpload(
-                                _loadDataController.currentUserId.value);
+                                _database.deleteTaskList(
+                                    _loadDataController.currentUserId.value);
 
-                            _loadDataController.getTodayTasks();
-                            _loadDataController.getTodayCompletedTasks();
+                                _loadDataController.taskListUpload(
+                                    _loadDataController.currentUserId.value);
 
-                            Get.back();
+                                _loadDataController.getTodayTasks();
+                                _loadDataController.getTodayCompletedTasks();
+
+                                Get.back();
+                              } else {
+                                print('WIFI ON NO INTERNET');
+                                Get.showSnackbar(GetSnackBar(
+                                  duration: Duration(seconds: 5),
+                                  messageText: Text(
+                                    'No internet connection. Please check your internet connection and try again.',
+                                    style: GoogleFonts.poppins(
+                                        color: white,
+                                        fontSize: height * 0.02,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                ));
+                              }
+                            } on SocketException catch (e) {
+                              Get.showSnackbar(GetSnackBar(
+                                duration: Duration(seconds: 5),
+                                messageText: Text(
+                                  'No internet connection. Please check your internet connection and try again.',
+                                  style: GoogleFonts.poppins(
+                                      color: white,
+                                      fontSize: height * 0.02,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ));
+                            }
                           },
                           child: Container(
                             height: height * 0.07,

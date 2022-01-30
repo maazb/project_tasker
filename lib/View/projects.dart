@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -131,43 +133,85 @@ class _ProjectsState extends State {
                                     )
                                   : Container(),
                               GestureDetector(
-                                onHorizontalDragEnd: (details) {
-                                  _loadDataController.projectList.remove(
-                                      _loadDataController.projectList[index]);
+                                onHorizontalDragEnd: (details) async {
+                                  try {
+                                    print('checking internet');
 
-                                  for (var i = 0;
-                                      i < _loadDataController.taskList.length;
-                                      i++) {
-                                    if (_loadDataController
-                                            .taskList[i].projectId! ==
-                                        index) {
-                                      _loadDataController.taskList.remove(
-                                          _loadDataController.taskList[i]);
+                                    final result = await InternetAddress.lookup(
+                                        "example.com");
+                                    print('checked internet');
+                                    if (result.isNotEmpty &&
+                                        result[0].rawAddress.isNotEmpty) {
+                                      _loadDataController.projectList.remove(
+                                          _loadDataController
+                                              .projectList[index]);
+
+                                      for (var i = 0;
+                                          i <
+                                              _loadDataController
+                                                  .taskList.length;
+                                          i++) {
+                                        if (_loadDataController
+                                                .taskList[i].projectId! ==
+                                            index) {
+                                          _loadDataController.taskList.remove(
+                                              _loadDataController.taskList[i]);
+                                        }
+                                      }
+
+                                      for (var i = 0;
+                                          i <
+                                              _loadDataController
+                                                  .taskList.length;
+                                          i++) {
+                                        if (_loadDataController
+                                                .taskList[i].projectId! >
+                                            index) {
+                                          _loadDataController.taskList[i]
+                                              .projectId = _loadDataController
+                                                  .taskList[i].projectId! -
+                                              1;
+                                        }
+                                      }
+
+                                      _database.deleteProjectList(
+                                          _loadDataController
+                                              .currentUserId.value);
+                                      _loadDataController.projectListUpload(
+                                          _loadDataController
+                                              .currentUserId.value);
+
+                                      _database.deleteTaskList(
+                                          _loadDataController
+                                              .currentUserId.value);
+                                      _loadDataController.taskListUpload(
+                                          _loadDataController
+                                              .currentUserId.value);
+                                    } else {
+                                      print('WIFI ON NO INTERNET');
+                                      Get.showSnackbar(GetSnackBar(
+                                        duration: Duration(seconds: 5),
+                                        messageText: Text(
+                                          'No internet connection. Please check your internet connection and try again.',
+                                          style: GoogleFonts.poppins(
+                                              color: white,
+                                              fontSize: height * 0.02,
+                                              fontWeight: FontWeight.w400),
+                                        ),
+                                      ));
                                     }
+                                  } on SocketException catch (e) {
+                                    Get.showSnackbar(GetSnackBar(
+                                      duration: Duration(seconds: 5),
+                                      messageText: Text(
+                                        'No internet connection. Please check your internet connection and try again.',
+                                        style: GoogleFonts.poppins(
+                                            color: white,
+                                            fontSize: height * 0.02,
+                                            fontWeight: FontWeight.w400),
+                                      ),
+                                    ));
                                   }
-
-                                  for (var i = 0;
-                                      i < _loadDataController.taskList.length;
-                                      i++) {
-                                    if (_loadDataController
-                                            .taskList[i].projectId! >
-                                        index) {
-                                      _loadDataController.taskList[i]
-                                          .projectId = _loadDataController
-                                              .taskList[i].projectId! -
-                                          1;
-                                    }
-                                  }
-
-                                  _database.deleteProjectList(
-                                      _loadDataController.currentUserId.value);
-                                  _loadDataController.projectListUpload(
-                                      _loadDataController.currentUserId.value);
-
-                                  _database.deleteTaskList(
-                                      _loadDataController.currentUserId.value);
-                                  _loadDataController.taskListUpload(
-                                      _loadDataController.currentUserId.value);
                                 },
                                 child: Stack(
                                   children: [
@@ -213,7 +257,7 @@ class _ProjectsState extends State {
                                                       child: Row(
                                                         children: [
                                                           Text(
-                                                            "4/10 tasks - ",
+                                                            "",
                                                             style: GoogleFonts.poppins(
                                                                 color:
                                                                     textColor,
@@ -225,7 +269,7 @@ class _ProjectsState extends State {
                                                                         0.018),
                                                           ),
                                                           Text(
-                                                            "40%",
+                                                            "",
                                                             style: GoogleFonts.poppins(
                                                                 color:
                                                                     textColor,

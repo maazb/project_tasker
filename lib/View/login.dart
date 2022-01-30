@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -20,6 +22,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   late double height;
   late double width;
+  String checkInternetDomain = "example.com";
   TextEditingController _textEditingControllerEmail = TextEditingController();
   TextEditingController _textEditingControllerPassword =
       TextEditingController();
@@ -32,51 +35,111 @@ class _LoginState extends State<Login> {
     authStateCheck();
   }
 
-  void authStateCheck() {
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (user == null) {
-        print('Auth: User not logged in');
-      } else {
-        print('Auth: User logged in');
-        // _loadDataController.currentUserId.value = user.uid;
-        // _loadDataController.currentUserName.value =
-        //     user.email!.split("@").first;
-        // _loadDataController.currentUserEmail.value = user.email!;
+  void authStateCheck() async {
+    try {
+      print('checking internet');
 
-        Get.offAll(HomeScreen(
-          userId: user.uid,
-          userName: user.email!.split("@").first,
-          userEmail: user.email,
+      final result = await InternetAddress.lookup(checkInternetDomain);
+      print('checked internet');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        FirebaseAuth.instance.authStateChanges().listen((User? user) {
+          if (user == null) {
+            print('Auth: User not logged in');
+          } else {
+            print('Auth: User logged in');
+            // _loadDataController.currentUserId.value = user.uid;
+            // _loadDataController.currentUserName.value =
+            //     user.email!.split("@").first;
+            // _loadDataController.currentUserEmail.value = user.email!;
+
+            Get.offAll(HomeScreen(
+              userId: user.uid,
+              userName: user.email!.split("@").first,
+              userEmail: user.email,
+            ));
+          }
+        });
+      } else {
+        print('WIFI ON NO INTERNET');
+        Get.showSnackbar(GetSnackBar(
+          messageText: Text(
+            'No internet connection. Please check your internet connection and restart app.',
+            style: GoogleFonts.poppins(
+                color: white,
+                fontSize: height * 0.02,
+                fontWeight: FontWeight.w400),
+          ),
         ));
       }
-    });
+    } on SocketException catch (e) {
+      Get.showSnackbar(GetSnackBar(
+        messageText: Text(
+          'No internet connection. Please check your internet connection and restart app.',
+          style: GoogleFonts.poppins(
+              color: white,
+              fontSize: height * 0.02,
+              fontWeight: FontWeight.w400),
+        ),
+      ));
+    }
   }
 
   void registerUser() async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-              email: _textEditingControllerEmail.text,
-              password: _textEditingControllerPassword.text);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        print('Register: Weak password error');
+      print('checking internet');
+
+      final result = await InternetAddress.lookup(checkInternetDomain);
+      print('checked internet');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        try {
+          UserCredential userCredential = await FirebaseAuth.instance
+              .createUserWithEmailAndPassword(
+                  email: _textEditingControllerEmail.text,
+                  password: _textEditingControllerPassword.text);
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'weak-password') {
+            print('Register: Weak password error');
+            Get.showSnackbar(GetSnackBar(
+              duration: Duration(seconds: 5),
+              messageText: Text(
+                'The password provided is too weak.',
+                style: GoogleFonts.poppins(
+                    color: white,
+                    fontSize: height * 0.02,
+                    fontWeight: FontWeight.w400),
+              ),
+            ));
+          } else if (e.code == 'email-already-in-use') {
+            print('Register: email-already-in-use');
+            Get.showSnackbar(GetSnackBar(
+              duration: Duration(seconds: 5),
+              messageText: Text(
+                'The account already exists for that email. Please Log In',
+                style: GoogleFonts.poppins(
+                    color: white,
+                    fontSize: height * 0.02,
+                    fontWeight: FontWeight.w400),
+              ),
+            ));
+          }
+        } catch (e) {
+          print(e);
+          Get.showSnackbar(GetSnackBar(
+            messageText: Text(
+              e.toString(),
+              style: GoogleFonts.poppins(
+                  color: white,
+                  fontSize: height * 0.02,
+                  fontWeight: FontWeight.w400),
+            ),
+          ));
+        }
+      } else {
+        print('WIFI ON NO INTERNET');
         Get.showSnackbar(GetSnackBar(
           duration: Duration(seconds: 5),
           messageText: Text(
-            'The password provided is too weak.',
-            style: GoogleFonts.poppins(
-                color: white,
-                fontSize: height * 0.02,
-                fontWeight: FontWeight.w400),
-          ),
-        ));
-      } else if (e.code == 'email-already-in-use') {
-        print('Register: email-already-in-use');
-        Get.showSnackbar(GetSnackBar(
-          duration: Duration(seconds: 5),
-          messageText: Text(
-            'The account already exists for that email. Please Log In',
+            'No internet connection. Please check your internet connection and try again.',
             style: GoogleFonts.poppins(
                 color: white,
                 fontSize: height * 0.02,
@@ -84,11 +147,11 @@ class _LoginState extends State<Login> {
           ),
         ));
       }
-    } catch (e) {
-      print(e);
+    } on SocketException catch (e) {
       Get.showSnackbar(GetSnackBar(
+        duration: Duration(seconds: 5),
         messageText: Text(
-          e.toString(),
+          'No internet connection. Please check your internet connection and try again.',
           style: GoogleFonts.poppins(
               color: white,
               fontSize: height * 0.02,
@@ -100,29 +163,49 @@ class _LoginState extends State<Login> {
 
   void signIn() async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-              email: _textEditingControllerEmail.text,
-              password: _textEditingControllerPassword.text);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('Sign in: user-not-found');
+      print('checking internet');
+
+      final result = await InternetAddress.lookup(checkInternetDomain);
+      print('checked internet');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        try {
+          UserCredential userCredential = await FirebaseAuth.instance
+              .signInWithEmailAndPassword(
+                  email: _textEditingControllerEmail.text,
+                  password: _textEditingControllerPassword.text);
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'user-not-found') {
+            print('Sign in: user-not-found');
+            Get.showSnackbar(GetSnackBar(
+              duration: Duration(seconds: 5),
+              messageText: Text(
+                'No user found for that email.',
+                style: GoogleFonts.poppins(
+                    color: white,
+                    fontSize: height * 0.02,
+                    fontWeight: FontWeight.w400),
+              ),
+            ));
+          } else if (e.code == 'wrong-password') {
+            print('Sign in: Wrong password');
+            Get.showSnackbar(GetSnackBar(
+              duration: Duration(seconds: 5),
+              messageText: Text(
+                'Wrong password provided for that user.',
+                style: GoogleFonts.poppins(
+                    color: white,
+                    fontSize: height * 0.02,
+                    fontWeight: FontWeight.w400),
+              ),
+            ));
+          }
+        }
+      } else {
+        print('WIFI ON NO INTERNET');
         Get.showSnackbar(GetSnackBar(
           duration: Duration(seconds: 5),
           messageText: Text(
-            'No user found for that email.',
-            style: GoogleFonts.poppins(
-                color: white,
-                fontSize: height * 0.02,
-                fontWeight: FontWeight.w400),
-          ),
-        ));
-      } else if (e.code == 'wrong-password') {
-        print('Sign in: Wrong password');
-        Get.showSnackbar(GetSnackBar(
-          duration: Duration(seconds: 5),
-          messageText: Text(
-            'Wrong password provided for that user.',
+            'No internet connection. Please check your internet connection and try again.',
             style: GoogleFonts.poppins(
                 color: white,
                 fontSize: height * 0.02,
@@ -130,6 +213,17 @@ class _LoginState extends State<Login> {
           ),
         ));
       }
+    } on SocketException catch (e) {
+      Get.showSnackbar(GetSnackBar(
+        duration: Duration(seconds: 5),
+        messageText: Text(
+          'No internet connection. Please check your internet connection and try again.',
+          style: GoogleFonts.poppins(
+              color: white,
+              fontSize: height * 0.02,
+              fontWeight: FontWeight.w400),
+        ),
+      ));
     }
   }
 

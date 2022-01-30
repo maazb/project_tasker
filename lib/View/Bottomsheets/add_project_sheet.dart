@@ -1,4 +1,6 @@
 // ignore_for_file: file_names
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -253,21 +255,54 @@ class _AddProjectSheetState extends State {
                     ),
                     CupertinoButton(
                       padding: EdgeInsets.all(0),
-                      onPressed: () {
-                        _loadDataController.projectList.add(Project(
-                            projectName: _textEditingController.text,
-                            projectColor: _loadDataController
-                                .selectedColorAddProject.value,
-                            projectAvatar: _loadDataController
-                                .selectedAvatarAddProject.value));
+                      onPressed: () async {
+                        try {
+                          print('checking internet');
 
-                        _database.deleteProjectList(
-                            _loadDataController.currentUserId.value);
+                          final result =
+                              await InternetAddress.lookup("example.com");
+                          print('checked internet');
+                          if (result.isNotEmpty &&
+                              result[0].rawAddress.isNotEmpty) {
+                            _loadDataController.projectList.add(Project(
+                                projectName: _textEditingController.text,
+                                projectColor: _loadDataController
+                                    .selectedColorAddProject.value,
+                                projectAvatar: _loadDataController
+                                    .selectedAvatarAddProject.value));
 
-                        _loadDataController.projectListUpload(
-                            _loadDataController.currentUserId.value);
+                            _database.deleteProjectList(
+                                _loadDataController.currentUserId.value);
 
-                        Get.back();
+                            _loadDataController.projectListUpload(
+                                _loadDataController.currentUserId.value);
+
+                            Get.back();
+                          } else {
+                            print('WIFI ON NO INTERNET');
+                            Get.showSnackbar(GetSnackBar(
+                              duration: Duration(seconds: 5),
+                              messageText: Text(
+                                'No internet connection. Please check your internet connection and try again.',
+                                style: GoogleFonts.poppins(
+                                    color: white,
+                                    fontSize: height * 0.02,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                            ));
+                          }
+                        } on SocketException catch (e) {
+                          Get.showSnackbar(GetSnackBar(
+                            duration: Duration(seconds: 5),
+                            messageText: Text(
+                              'No internet connection. Please check your internet connection and try again.',
+                              style: GoogleFonts.poppins(
+                                  color: white,
+                                  fontSize: height * 0.02,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                          ));
+                        }
                       },
                       child: Container(
                         height: height * 0.07,

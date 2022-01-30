@@ -3,6 +3,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:project_tasker/Controller/load_data_controller.dart';
 import 'package:project_tasker/Helper/values.dart';
 import 'package:project_tasker/View/Bottomsheets/add_sheet.dart';
 import 'package:project_tasker/View/account.dart';
@@ -18,6 +19,7 @@ class BottomNavigation extends StatefulWidget {
 class _BottomNavigationState extends State {
   late double height;
   late double width;
+  LoadDataController _loadDataController = Get.find();
   @override
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
@@ -49,7 +51,11 @@ class _BottomNavigationState extends State {
                         size: width * 0.06,
                       ),
                 onPressed: () {
-                  Get.to(() => HomeScreen());
+                  Get.offAll(HomeScreen(
+                    userEmail: _loadDataController.currentUserEmail.value,
+                    userId: _loadDataController.currentUserId.value,
+                    userName: _loadDataController.currentUserName.value,
+                  ));
                 }),
             CupertinoButton(
                 padding: EdgeInsets.all(0),

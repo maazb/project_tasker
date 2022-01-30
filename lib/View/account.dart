@@ -232,36 +232,36 @@ class _AccountState extends State {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: height * 0.015,
-                ),
-                ListTile(
-                  contentPadding: EdgeInsets.all(0),
-                  // leading: SvgPicture.asset(
-                  //   'assets/icons/notification.svg',
-                  //   height: width * 0.13,
-                  //   width: width * 0.13,
-                  // ),
-                  title: Text(
-                    "Notifications",
-                    style: GoogleFonts.poppins(
-                        fontSize: height * 0.022,
-                        color: textColor,
-                        fontWeight: FontWeight.w400),
-                  ),
-                  trailing: Container(
-                    height: height * 0.05,
-                    width: width * 0.1,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(width * 0.03),
-                        color: grey),
-                    child: Icon(
-                      CupertinoIcons.forward,
-                      color: textColor,
-                      size: width * 0.045,
-                    ),
-                  ),
-                ),
+                // SizedBox(
+                //   height: height * 0.015,
+                // ),
+                // ListTile(
+                //   contentPadding: EdgeInsets.all(0),
+                //   // leading: SvgPicture.asset(
+                //   //   'assets/icons/notification.svg',
+                //   //   height: width * 0.13,
+                //   //   width: width * 0.13,
+                //   // ),
+                //   title: Text(
+                //     "Notifications",
+                //     style: GoogleFonts.poppins(
+                //         fontSize: height * 0.022,
+                //         color: textColor,
+                //         fontWeight: FontWeight.w400),
+                //   ),
+                //   trailing: Container(
+                //     height: height * 0.05,
+                //     width: width * 0.1,
+                //     decoration: BoxDecoration(
+                //         borderRadius: BorderRadius.circular(width * 0.03),
+                //         color: grey),
+                //     child: Icon(
+                //       CupertinoIcons.forward,
+                //       color: textColor,
+                //       size: width * 0.045,
+                //     ),
+                //   ),
+                // ),
                 SizedBox(
                   height: height * 0.015,
                 ),

@@ -1,5 +1,7 @@
 // ignore_for_file: file_names
 
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -52,15 +54,46 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadDataController.currentUserId.value = widget.userId!;
     _loadDataController.currentUserName.value = widget.userName!;
     _loadDataController.currentUserEmail.value = widget.userEmail!;
-    await _loadDataController.getNotes(_loadDataController.currentUserId.value);
-    await _loadDataController
-        .getProjects(_loadDataController.currentUserId.value);
-    await _loadDataController
-        .getTasks(_loadDataController.currentUserId.value)
-        .then((value) {
-      getToDo();
-      _loadDataController.loading.value = false;
-    });
+    try {
+      print('checking internet');
+
+      final result = await InternetAddress.lookup("example.com");
+      print('checked internet');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        await _loadDataController
+            .getNotes(_loadDataController.currentUserId.value);
+        await _loadDataController
+            .getProjects(_loadDataController.currentUserId.value);
+        await _loadDataController
+            .getTasks(_loadDataController.currentUserId.value)
+            .then((value) {
+          getToDo();
+          _loadDataController.loading.value = false;
+        });
+      } else {
+        print('WIFI ON NO INTERNET');
+        Get.showSnackbar(GetSnackBar(
+          messageText: Text(
+            'No internet connection. Please check your internet connection and press refresh.',
+            style: GoogleFonts.poppins(
+                color: white,
+                fontSize: height * 0.02,
+                fontWeight: FontWeight.w400),
+          ),
+        ));
+      }
+    } on SocketException catch (e) {
+      Get.showSnackbar(GetSnackBar(
+        messageText: Text(
+          'No internet connection. Please check your internet connection and press refresh.',
+          style: GoogleFonts.poppins(
+              color: white,
+              fontSize: height * 0.02,
+              fontWeight: FontWeight.w400),
+        ),
+      ));
+    }
+
     //_loadDataController.getTodayTasks();
 
     _loadDataController.addColors();
@@ -113,25 +146,30 @@ class _HomeScreenState extends State<HomeScreen> {
                 minSize: width * 0.001,
                 padding: EdgeInsets.all(0),
                 onPressed: () {
-                  Get.to(() => Notifications());
+                  Get.offAll(HomeScreen(
+                    userEmail: _loadDataController.currentUserEmail.value,
+                    userId: _loadDataController.currentUserId.value,
+                    userName: _loadDataController.currentUserName.value,
+                  ));
                 },
                 child: Container(
                     child: Stack(
                   children: [
                     Icon(
-                      CupertinoIcons.bell,
+                      CupertinoIcons.refresh,
                       color: textColor,
                     ),
-                    Positioned(
-                        right: width * 0.00,
-                        top: height * 0.00,
-                        child: Container(
-                          height: width * 0.018,
-                          width: width * 0.018,
-                          decoration: BoxDecoration(
-                              color: green,
-                              borderRadius: BorderRadius.circular(width * 5)),
-                        ))
+                    // Positioned(
+                    //     right: width * 0.00,
+                    //     top: height * 0.00,
+                    //     child: Container(
+                    //       height: width * 0.018,
+                    //       width: width * 0.018,
+                    //       decoration: BoxDecoration(
+                    //           color: green,
+                    //           borderRadius: BorderRadius.circular(width * 5)),
+                    //     )
+                    //    )
                   ],
                 )),
               )
@@ -306,27 +344,87 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                     height * 3),
                                                       ),
                                                       child: CupertinoButton(
-                                                        onPressed: () {
-                                                          // _database.deleteNote(
-                                                          //     index,
-                                                          //     _loadDataController
-                                                          //         .currentUserId
-                                                          //         .value);
-                                                          _loadDataController
-                                                              .noteList
-                                                              .remove(_loadDataController
-                                                                      .noteList[
-                                                                  index]);
+                                                        onPressed: () async {
+                                                          try {
+                                                            print(
+                                                                'checking internet');
 
-                                                          _database.deleteNoteList(
+                                                            final result =
+                                                                await InternetAddress
+                                                                    .lookup(
+                                                                        "example.com");
+                                                            print(
+                                                                'checked internet');
+                                                            if (result
+                                                                    .isNotEmpty &&
+                                                                result[0]
+                                                                    .rawAddress
+                                                                    .isNotEmpty) {
+// _database.deleteNote(
+                                                              //     index,
+                                                              //     _loadDataController
+                                                              //         .currentUserId
+                                                              //         .value);
                                                               _loadDataController
-                                                                  .currentUserId
-                                                                  .value);
-                                                          _loadDataController
-                                                              .noteListUpload(
+                                                                  .noteList
+                                                                  .remove(_loadDataController
+                                                                          .noteList[
+                                                                      index]);
+
+                                                              _database.deleteNoteList(
                                                                   _loadDataController
                                                                       .currentUserId
                                                                       .value);
+                                                              _loadDataController
+                                                                  .noteListUpload(
+                                                                      _loadDataController
+                                                                          .currentUserId
+                                                                          .value);
+                                                            } else {
+                                                              print(
+                                                                  'WIFI ON NO INTERNET');
+                                                              Get.showSnackbar(
+                                                                  GetSnackBar(
+                                                                duration:
+                                                                    Duration(
+                                                                        seconds:
+                                                                            5),
+                                                                messageText:
+                                                                    Text(
+                                                                  'No internet connection. Please check your internet connection and try again.',
+                                                                  style: GoogleFonts.poppins(
+                                                                      color:
+                                                                          white,
+                                                                      fontSize:
+                                                                          height *
+                                                                              0.02,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w400),
+                                                                ),
+                                                              ));
+                                                            }
+                                                          } on SocketException catch (e) {
+                                                            Get.showSnackbar(
+                                                                GetSnackBar(
+                                                              duration:
+                                                                  Duration(
+                                                                      seconds:
+                                                                          5),
+                                                              messageText: Text(
+                                                                'No internet connection. Please check your internet connection and try again.',
+                                                                style: GoogleFonts.poppins(
+                                                                    color:
+                                                                        white,
+                                                                    fontSize:
+                                                                        height *
+                                                                            0.02,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400),
+                                                              ),
+                                                            ));
+                                                          }
                                                         },
                                                         padding:
                                                             EdgeInsets.all(0),
@@ -417,75 +515,189 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       : Container(),
                                                   GestureDetector(
                                                     onHorizontalDragEnd:
-                                                        (details) {
-                                                      _loadDataController
-                                                          .taskList
-                                                          .remove(
-                                                              _loadDataController
+                                                        (details) async {
+                                                      try {
+                                                        print(
+                                                            'checking internet');
+
+                                                        final result =
+                                                            await InternetAddress
+                                                                .lookup(
+                                                                    "example.com");
+                                                        print(
+                                                            'checked internet');
+                                                        if (result.isNotEmpty &&
+                                                            result[0]
+                                                                .rawAddress
+                                                                .isNotEmpty) {
+                                                          _loadDataController
+                                                              .taskList
+                                                              .remove(_loadDataController
                                                                       .taskList[
                                                                   index]);
 
-                                                      _database.deleteTaskList(
-                                                          _loadDataController
-                                                              .currentUserId
-                                                              .value);
-                                                      _loadDataController
-                                                          .taskListUpload(
+                                                          _database.deleteTaskList(
                                                               _loadDataController
                                                                   .currentUserId
                                                                   .value);
+                                                          _loadDataController
+                                                              .taskListUpload(
+                                                                  _loadDataController
+                                                                      .currentUserId
+                                                                      .value);
+                                                        } else {
+                                                          print(
+                                                              'WIFI ON NO INTERNET');
+                                                          Get.showSnackbar(
+                                                              GetSnackBar(
+                                                            duration: Duration(
+                                                                seconds: 5),
+                                                            messageText: Text(
+                                                              'No internet connection. Please check your internet connection and try again.',
+                                                              style: GoogleFonts.poppins(
+                                                                  color: white,
+                                                                  fontSize:
+                                                                      height *
+                                                                          0.02,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400),
+                                                            ),
+                                                          ));
+                                                        }
+                                                      } on SocketException catch (e) {
+                                                        Get.showSnackbar(
+                                                            GetSnackBar(
+                                                          duration: Duration(
+                                                              seconds: 5),
+                                                          messageText: Text(
+                                                            'No internet connection. Please check your internet connection and try again.',
+                                                            style: GoogleFonts
+                                                                .poppins(
+                                                                    color:
+                                                                        white,
+                                                                    fontSize:
+                                                                        height *
+                                                                            0.02,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400),
+                                                          ),
+                                                        ));
+                                                      }
                                                     },
                                                     child: CupertinoButton(
-                                                      onPressed: () {
-                                                        if (_loadDataController
-                                                                .taskList[index]
-                                                                .completed ==
-                                                            false) {
-                                                          _loadDataController
-                                                              .taskList[index]
-                                                              .completed = true;
-                                                          _database.deleteTaskList(
-                                                              _loadDataController
-                                                                  .currentUserId
-                                                                  .value);
+                                                      onPressed: () async {
+                                                        try {
+                                                          print(
+                                                              'checking internet');
 
-                                                          _loadDataController
-                                                              .taskListUpload(
+                                                          final result =
+                                                              await InternetAddress
+                                                                  .lookup(
+                                                                      "example.com");
+                                                          print(
+                                                              'checked internet');
+                                                          if (result
+                                                                  .isNotEmpty &&
+                                                              result[0]
+                                                                  .rawAddress
+                                                                  .isNotEmpty) {
+                                                            if (_loadDataController
+                                                                    .taskList[
+                                                                        index]
+                                                                    .completed ==
+                                                                false) {
+                                                              _loadDataController
+                                                                      .taskList[
+                                                                          index]
+                                                                      .completed =
+                                                                  true;
+                                                              _database.deleteTaskList(
                                                                   _loadDataController
                                                                       .currentUserId
                                                                       .value);
 
-                                                          _loadDataController
-                                                              .getTodayTotalTasks();
-
-                                                          _loadDataController
-                                                              .getTodayCompletedTasks();
-                                                        } else {
-                                                          _loadDataController
-                                                              .taskList[index]
-                                                              .completed = false;
-
-                                                          _database.deleteTaskList(
                                                               _loadDataController
-                                                                  .currentUserId
-                                                                  .value);
+                                                                  .taskListUpload(
+                                                                      _loadDataController
+                                                                          .currentUserId
+                                                                          .value);
 
-                                                          _loadDataController
-                                                              .taskListUpload(
+                                                              _loadDataController
+                                                                  .getTodayTotalTasks();
+
+                                                              _loadDataController
+                                                                  .getTodayCompletedTasks();
+                                                            } else {
+                                                              _loadDataController
+                                                                      .taskList[
+                                                                          index]
+                                                                      .completed =
+                                                                  false;
+
+                                                              _database.deleteTaskList(
                                                                   _loadDataController
                                                                       .currentUserId
                                                                       .value);
 
-                                                          _loadDataController
-                                                              .getTodayTotalTasks();
+                                                              _loadDataController
+                                                                  .taskListUpload(
+                                                                      _loadDataController
+                                                                          .currentUserId
+                                                                          .value);
 
-                                                          _loadDataController
-                                                              .getTodayCompletedTasks();
+                                                              _loadDataController
+                                                                  .getTodayTotalTasks();
+
+                                                              _loadDataController
+                                                                  .getTodayCompletedTasks();
+                                                            }
+
+                                                            setState(() {});
+                                                            _loadDataController
+                                                                .getTodayCompletedTasks();
+                                                          } else {
+                                                            print(
+                                                                'WIFI ON NO INTERNET');
+                                                            Get.showSnackbar(
+                                                                GetSnackBar(
+                                                              duration:
+                                                                  Duration(
+                                                                      seconds:
+                                                                          5),
+                                                              messageText: Text(
+                                                                'No internet connection. Please check your internet connection and try again.',
+                                                                style: GoogleFonts.poppins(
+                                                                    color:
+                                                                        white,
+                                                                    fontSize:
+                                                                        height *
+                                                                            0.02,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w400),
+                                                              ),
+                                                            ));
+                                                          }
+                                                        } on SocketException catch (e) {
+                                                          Get.showSnackbar(
+                                                              GetSnackBar(
+                                                            duration: Duration(
+                                                                seconds: 5),
+                                                            messageText: Text(
+                                                              'No internet connection. Please check your internet connection and try again.',
+                                                              style: GoogleFonts.poppins(
+                                                                  color: white,
+                                                                  fontSize:
+                                                                      height *
+                                                                          0.02,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400),
+                                                            ),
+                                                          ));
                                                         }
-
-                                                        setState(() {});
-                                                        _loadDataController
-                                                            .getTodayCompletedTasks();
                                                       },
                                                       padding:
                                                           EdgeInsets.all(0),
