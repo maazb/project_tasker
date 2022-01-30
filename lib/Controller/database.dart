@@ -73,7 +73,7 @@ class Database {
   Future<int> getTheme(String uid) async {
     DatabaseEvent event =
         await FirebaseDatabase.instance.ref('users/$uid/theme').once();
-    if (event != null) {
+    if (event != null && event.snapshot.value != null) {
       Map<dynamic, dynamic> map = event.snapshot.value as Map<dynamic, dynamic>;
       return map.values.elementAt(0);
     } else {
@@ -88,7 +88,7 @@ class Database {
   Future<int> getAvatar(String uid) async {
     DatabaseEvent event =
         await FirebaseDatabase.instance.ref('users/$uid/avatar').once();
-    if (event != null) {
+    if (event != null && event.snapshot.value != null) {
       Map<dynamic, dynamic> map = event.snapshot.value as Map<dynamic, dynamic>;
       return map.values.elementAt(0);
     } else {

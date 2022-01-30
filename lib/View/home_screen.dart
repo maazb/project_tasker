@@ -105,9 +105,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void getToDo() async {
     await _loadDataController.getTodayTotalTasks();
-    await _loadDataController
-        .getTodayCompletedTasks()
-        .then((value) => _loadDataController.mainLoading.value = false);
+    await _loadDataController.getTodayCompletedTasks();
+    // .then((value) => _loadDataController.mainLoading.value = false);
+    _loadDataController.mainLoading.value = false;
     setState(() {});
   }
 
